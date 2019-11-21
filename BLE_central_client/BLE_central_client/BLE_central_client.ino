@@ -101,36 +101,15 @@ start_loop:
 
     // while the peripheral is connected
     while (peripheral.connected()) {
-
       // check if the value of the characteristic has been updated
-      if (characteristic_0.valueUpdated()) {
-
-        // read RSSI
-        Serial.print("==>RSSI: ");
-        Serial.println(peripheral.rssi());
-
+//      if (characteristic_0.valueUpdated()) {
         // read value
         characteristic_0.readValue(value_0);
-        Serial.print("Read value: ");
-        Serial.println(value_0);
+        Serial.println((char) value_0);
+//        value_0++;
+        characteristic_0.writeValue((byte)value_0);
 
-        // Check threshold
-        if (value_0 <= THRESHOLD) {
-
-          // increment value
-          value_0++;
-
-          // sleep for a while
-          delay(SLEEPTIME);
-
-          // write value
-          characteristic_0.writeValue((byte)value_0);
-          Serial.print("Written value: ");
-          Serial.println(value_0);
-
-        }
-
-      }
+//      }
 
     }
 
