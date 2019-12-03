@@ -3,5 +3,17 @@ html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
+    script(defer='' src='https://use.fontawesome.com/releases/v5.3.1/js/all.js')
+    link(rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.css')
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+
   body
+    nav.navbar(role='navigation' aria-label='main navigation')
+      .navbar-brand
+        a.navbar-item(href='https://bulma.io')
+          img(src='/images/bulma-logo.png' alt='Bulma: Free, open source, and modern CSS framework based on Flexbox' width='112' height='28')
+        a.navbar-burger(role='button' aria-label='menu' aria-expanded='false')
+          span(aria-hidden='true')
+          span(aria-hidden='true')
+          span(aria-hidden='true')
     block content

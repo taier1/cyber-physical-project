@@ -20,12 +20,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use('/', indexRouter);
-// app.use('/users', usersRouter);
-
-app.get('/', function (req, res) {
-  res.send('Hello World!');
-});
+app.use('/', indexRouter);
 
 app.listen(5000, function () {
   console.log('Example app listening on port 5000!');
