@@ -3,8 +3,12 @@ void setup() {
   while(!Serial){
     Serial.println("Waiting serial");
   }
-  
-  Serial1.begin(9600); // Initialize serial with a baud rate of 115200 bps
+
+   // initialize usb serial communication at 9600 bits per second:
+  Serial.begin(9600);
+
+  // Initialize pin serial:
+  Serial1.begin(9600); 
   while(!Serial1) {
     Serial.println("Waiting for Serial1");
   }
@@ -28,9 +32,10 @@ delay(200);
 //  Serial.println(millis()/1000); // Print running time in seconds
 
   
-// Code adapted from https://github.com/ricki-z/SDS011/blob/master/SDS011.cpp
+// Protocol reading adapted from https://github.com/ricki-z/SDS011/blob/master/SDS011.cpp
   if (Serial1) {
     byte recByte = Serial1.read();
+    // debug
 //    Serial.println(recByte);
     int value = int(recByte);
     switch (len) {
@@ -51,10 +56,24 @@ delay(200);
       float p25 = (float)pm25_serial/10.0;
       len = 0; checksum_ok = 0; pm10_serial = 0.0; pm25_serial = 0.0; checksum_is = 0;
 //      error = 0;
+
+      // AIR QUALITY reading
+      // read the input on analog pin 0:
+      int sensorValue = analogRead(A0);
+
+      // Air quality printing
+      Serial.print("Air quality: ");
+      Serial.println(sensorValue);
+
+      // PM values printing
       Serial.print("PM10: ");
       Serial.println(p10);
       Serial.print("PM2.5: ");
       Serial.println(p25);
+    }else if(len == 10 && checksum_ok == 0){
+      Serial.println("checksum error!");
+      Serial.println(checksum_is);
+      Serial.println(checksum_ok);
     }
   }
 }
