@@ -89,9 +89,7 @@ void loop() {
       if (Serial1) {
 
         boolean processing = true;
-        while (Serial1 && processing) {
-          Serial.println(len);
-          delay(50);
+        while (Serial1.available() > 0 && processing) {                   
 
           byte recByte = Serial1.read();
           // to debug the protocol
@@ -132,9 +130,16 @@ void loop() {
             // read the input on analog pin 0:
             int sensorValue = analogRead(A0);
 
+            int pm10 = pm10_serial/10;
+            int pm25 = pm25_serial/10;
 
             // write inside the buffer
             String values = String(sensorValue);
+            values += ",";
+            values += String(pm10);
+            values += ",";
+            values += String(pm25);
+            values += ";";
             values.toCharArray(data_to_send, MAX_LEN);
 
             mobilePhoneChar.writeValue((char*)data_to_send, MAX_LEN);
@@ -146,9 +151,9 @@ void loop() {
 
             // PM values printing
             Serial.print("PM10: ");
-            Serial.println(pm10_serial);
+            Serial.println(pm10);
             Serial.print("PM2.5: ");
-            Serial.println(pm25_serial);
+            Serial.println(pm25);
             len = 0; checksum_ok = 0; pm10_serial = 0.0; pm25_serial = 0.0; checksum_is = 0;
           } 
         }
