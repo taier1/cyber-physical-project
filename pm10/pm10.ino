@@ -35,8 +35,8 @@ delay(200);
 // Protocol reading adapted from https://github.com/ricki-z/SDS011/blob/master/SDS011.cpp
   if (Serial1) {
     byte recByte = Serial1.read();
-    // debug
-//    Serial.println(recByte);
+    // to debug the protocol
+    // Serial.println(recByte);
     int value = int(recByte);
     switch (len) {
       case (0): if (value != 170) { len = -1; return; }; break;
@@ -57,7 +57,7 @@ delay(200);
       len = 0; checksum_ok = 0; pm10_serial = 0.0; pm25_serial = 0.0; checksum_is = 0;
 //      error = 0;
 
-      // AIR QUALITY reading
+      // Air quality reading
       // read the input on analog pin 0:
       int sensorValue = analogRead(A0);
 
@@ -75,5 +75,7 @@ delay(200);
       Serial.println(checksum_is);
       Serial.println(checksum_ok);
     }
+  }else{
+    Serial.println("Serial port not found");
   }
 }
