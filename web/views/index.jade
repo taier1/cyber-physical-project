@@ -1,6 +1,18 @@
 extends layout
 
 block content
-  #map(style='min-width:100%;height: 100vh;')
-  a#marker_1(href='#') Marker 1
+
+  .container-fluid
+    .mapbox
+      #map.dvContainer(style='min-width:100%;height: 600px;')
+      .row-fluid.overlay.asd
+        .span1
+          p PM10: ####
+        .span1
+          p PM2.5: ####
+        .span1
+          p AirQuality: ####
+
+
+
   script(src='javascript/map.js')
