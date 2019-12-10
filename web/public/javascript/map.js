@@ -6,19 +6,25 @@ var osmLayer = new L.TileLayer(osmUrl, {
 });
 map.addLayer(osmLayer);
 var markers = [];
-var marker1 = L.marker([46.0037, 8.9511],{title:"marker_1"}).addTo(map).bindPopup("Marker 1");
-markers.push(marker1);
-
-marker1.on('mouseover',function(ev) {
-    marker1.openPopup();
-});
 
 
-var circle = L.circle([46.0037, 8.9511], 500, {
-    color: 'red',
-    fillColor: '#f03',
-    fillOpacity: 0.5
-}).addTo(map);
+function addMarker(lat, long, title) {
+    var marker1 = L.marker([lat, long],{title: title}).addTo(map).bindPopup(title);
+
+    marker1.on('mouseover',function(ev) {
+        marker1.openPopup();
+    });
+
+
+    var circle = L.circle([lat, long], 50, {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5
+    }).addTo(map);
+
+    markers.push(marker1);
+}
+
 
 
 function markerFunction(id){
@@ -33,3 +39,8 @@ function markerFunction(id){
 $("a").click(function(){
     markerFunction($(this)[0].id);
 });
+
+for (var i = 0; i < 20; i++){
+    var l = 0.0001+i/1000;
+    addMarker(46.0037+ l , 8.951 + l, "Bike " + i)
+}
