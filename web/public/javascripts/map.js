@@ -164,7 +164,7 @@ let timeout = function () {
     setTimeout(function () {
         addCurrentPositionsToMap()
         timeout()
-    }, 10000);
+    }, 1000);
 }
 
 
