@@ -22,7 +22,7 @@ let addMarker = function(data, current) {
     if (current) {
         let bikeIcon = L.icon({
             iconUrl: '../images/bike.png',
-            iconSize:     [map.getZoom()*0.5, map.getZoom()*0.5], // size of the icon
+            iconSize:     [map.getZoom()*1.5, map.getZoom()*1.5], // size of the icon
             iconAnchor:   [23, 0], // point of the icon which will correspond to marker's location
             popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
