@@ -198,7 +198,7 @@ let timeout = function () {
     setTimeout(function () {
         addCurrentPositionsToMap()
         timeout()
-    }, 1000);
+    }, 5000);
 }
 
 let handleBikeTableClick = function(document){
