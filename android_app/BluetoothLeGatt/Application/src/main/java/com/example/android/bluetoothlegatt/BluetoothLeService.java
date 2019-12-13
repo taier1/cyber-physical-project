@@ -166,7 +166,7 @@ public class BluetoothLeService extends Service {
 //            Log.e("asd", data.toString());
             String receivedData = new String(data);
             if (data != null && data.length > 0 && lastLocation != null) {
-                String url = "https://webhook.site/b1352919-02cb-46c6-91f9-345fcbb1f07c";
+                String url = "http://federicopfahler-xfg3.localhost.run/api/update";
                 String[] parts = receivedData.split(";");
 
                 // example:
