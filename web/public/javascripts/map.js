@@ -4,9 +4,9 @@ var map;
 var bikeIcon = L.icon({
     iconUrl: '../images/bike.png',
 
-    iconSize:     [46, 45], // size of the icon
-    iconAnchor:   [23, 0], // point of the icon which will correspond to marker's location
-    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+    iconSize: [46, 45], // size of the icon
+    iconAnchor: [23, 0], // point of the icon which will correspond to marker's location
+    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
 });
 
 let mapSetup = function () {
@@ -19,11 +19,16 @@ let mapSetup = function () {
     map.addLayer(osmLayer);
 }
 
-let addMarker = function(lat, long, title, current, color) {
+let addMarker = function (data, current) {
+    let long = data['long'];
+    let lat = data['lat'];
+    let bikeId = data['bikeId'];
+
+
     var marker1;
 
     if (current)
-        marker1 = L.marker([lat, long], {icon: bikeIcon},{title: title}).addTo(map);
+        marker1 = L.marker([lat, long], {icon: bikeIcon}, {title: bikeId}).addTo(map);
 
     if (!current) {
         var circle = L.circle([lat, long], 50, {
@@ -36,62 +41,102 @@ let addMarker = function(lat, long, title, current, color) {
     }
 }
 
-let _markerFunction = function(id){
-    for (var i in markers){
+let _markerFunction = function (id) {
+    for (var i in markers) {
         var markerID = markers[i].options.title;
-        if (markerID == id){
+        if (markerID == id) {
             markers[i].openPopup();
-        };
+        }
+        ;
     }
 }
 
-$("a").click(function(){
+$("a").click(function () {
     markerFunction($(this)[0].id);
 });
 
-
-let fakeData = function () {
-    for (var i = 0; i < 20; i++){
-        var l = 0.0001+i/1000;
-        addMarker(46.0037+ l , 8.951 + l, "Bike " + i , false);
-    }
-}
-
-let fetchCurrentPositions = function(next){
+let fetchCurrentPositions = function (next) {
     $.ajax({
         url: "/api/getCurrentPositions",
         type: 'GET',
         dataType: 'json', // added data type
-        success: function(res) {
+        success: function (res) {
             next(res)
         }
     });
 };
 
-let fetchPreviousPositions = function(next){
+let fetchPreviousPositions = function (next) {
     $.ajax({
         url: "/api/getPreviousPositions",
         type: 'GET',
         dataType: 'json', // added data type
-        success: function(res) {
+        success: function (res) {
             next(res)
         }
     });
 };
 
+let updateBikeMarke = function (data) {
+    let long = data['long'];
+    let lat = data['lat'];
+    let bikeId = data['bikeId'];
+    addMarker(data, true)
+}
 
-let addCurrentPositionsToMap = function() {
+let updateTableRow = function (bikeObj) {
+    if ($('#tbody').children().length === 0 || document.getElementById('row' + bikeObj["bikeId"]) === null) {
+        $('#tbody').append('<tr id="row' + bikeObj["bikeId"] + '">' +
+            '<th>' + bikeObj["bikeId"] + '</th>' +
+            '<td>' + bikeObj["airQuality"] + '</td>' +
+            '<td>' + bikeObj["pm10"] + '</td>' +
+            '<td>' + bikeObj["pm25"] + '</td>' +
+            '</tr>')
+    } else {
+        $('#row' + bikeObj["bikeId"]).replaceWith('<tr id="row' + bikeObj["bikeId"] + '">' +
+            '<th>' + bikeObj["bikeId"] + '</th>' +
+            '<td>' + bikeObj["airQuality"] + '</td>' +
+            '<td>' + bikeObj["pm10"] + '</td>' +
+            '<td>' + bikeObj["pm25"] + '</td>' +
+            '</tr>'
+        )
+    }
+
+    var $elements = $('#row' + bikeObj["bikeId"]).addClass('highlight');
+    setTimeout(function () {
+        $elements.removeClass('highlight')
+    }, 4000);
+}
+
+let dataMap = {};
+let updateMap = function (data, i) {
+    dataMap[data[i]['bikeId']]['timestamp'] = data[i]['createdAt'];
+    dataMap[data[i]['bikeId']]['pm10'] = data[i]['pm10'];
+    dataMap[data[i]['bikeId']]['pm25'] = data[i]['pm25'];
+    dataMap[data[i]['bikeId']]['airQuality'] = data[i]['airQuality'];
+}
+let addCurrentPositionsToMap = function () {
     fetchCurrentPositions(function (data) {
         for (var i = 0; i < data.length; i++) {
-            let long = data[i]['long'];
-            let lat = data[i]['lat'];
-            let bikeId = data[i]['bikeId'];
-            addMarker(lat, long, bikeId, true)
+            if (data[i]['bikeId'] in dataMap) {
+                let latestTimeStamp = dataMap[data[i]['bikeId']]['timestamp']
+                if (latestTimeStamp !== data[i]['createdAt']) {
+                    updateMap(data, i)
+                    updateTableRow(data[i])
+                    updateBikeMarke(data[i])
+                }
+            } else {
+                dataMap[data[i]['bikeId']] = {};
+                updateMap(data, i)
+                updateTableRow(data[i])
+                updateBikeMarke(data[i])
+            }
+
         }
     })
 }
 
-let addPreviousPositionsToMap = function() {
+let addPreviousPositionsToMap = function () {
     fetchPreviousPositions(function (data) {
         for (var i = 0; i < data.length; i++) {
             let long = data[i]['long'];
@@ -102,11 +147,13 @@ let addPreviousPositionsToMap = function() {
     })
 }
 
+let timeout = function () {
+    setTimeout(function () {
+        addCurrentPositionsToMap()
+        timeout()
+    }, 1000);
+}
 
 
-$( document ).ready(function() {
-    mapSetup();
-
-    addCurrentPositionsToMap()
-    addPreviousPositionsToMap()
-})
+mapSetup();
+timeout()
