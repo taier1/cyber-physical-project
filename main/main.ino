@@ -12,12 +12,11 @@ const int ledPin3 = 24;
 
 //BT
 char data_to_send[MAX_LEN];
-BLEService mobilePhoneService("180F");
-BLECharacteristic mobilePhoneChar("2A19",  // standard 16-bit characteristic UUID
-                                  BLEWrite |
+BLEService mobilePhoneService("A137");
+BLECharacteristic mobilePhoneChar("A138",  // standard 16-bit characteristic UUID
                                   BLERead |
-                                  BLENotify, MAX_LEN,
-                                  false); // remote clients will be able to get notifications if this characteristic changes
+                                  BLENotify, MAX_LEN
+                                 ); // remote clients will be able to get notifications if this characteristic changes
 
 //Sensors
 byte buffer;
@@ -54,65 +53,16 @@ void setup() {
     while (1);
   }
 
-  static auto name = "HARDUINO" + BLE.address();
-  name.replace(":", "");
+  const String name = "AIR_QUALITY";
   BLE.setLocalName(name.c_str());
 
   BLE.setAdvertisedService(mobilePhoneService); // add the service UUID
   mobilePhoneService.addCharacteristic(mobilePhoneChar); // add the phone characteristic
   BLE.addService(mobilePhoneService); // Add the mobile phone service
 
-  //BLE.setAdvertisedServiceUuid("12340000-E8F2-537E-4F6C-D104768A1214");
-
   BLE.advertise();
 
   Serial.println("Setup complete");
-
-  while (!central) {
-    // wait for a BLE central
-    central = BLE.central();
-    Serial.println("waiting for central connections...");
-    digitalWrite(ledPin, HIGH);
-    digitalWrite(ledPin2, LOW);
-    digitalWrite(ledPin3, HIGH); //azzurro
-    delay(500);
-    digitalWrite(ledPin, HIGH);
-    digitalWrite(ledPin2, HIGH);
-    digitalWrite(ledPin3, HIGH);//blu
-    delay(500);
-
-//    digitalWrite(ledPin, LOW);
-//    digitalWrite(ledPin2, LOW);
-//    digitalWrite(ledPin3, LOW);//bianco
-//    delay(1000);
-//    digitalWrite(ledPin, LOW);
-//    digitalWrite(ledPin2, LOW);
-//    digitalWrite(ledPin3, HIGH); //giallo
-//    delay(1000);
-//    digitalWrite(ledPin, LOW);
-//    digitalWrite(ledPin2, HIGH);
-//    digitalWrite(ledPin3, HIGH); // rosso
-//    delay(1000);
-//    digitalWrite(ledPin, HIGH);
-//    digitalWrite(ledPin2, LOW);
-//    digitalWrite(ledPin3, LOW); / azzurro
-//    delay(1000);
-//    digitalWrite(ledPin, HIGH);
-//    digitalWrite(ledPin2, LOW);
-//    digitalWrite(ledPin3, HIGH); //verde
-//    delay(1000);
-//    digitalWrite(ledPin, HIGH);
-//    digitalWrite(ledPin2, HIGH);
-//    digitalWrite(ledPin3, LOW);//blu
-//    delay(1000);
-//
-//    digitalWrite(ledPin, HIGH);
-//    digitalWrite(ledPin2, HIGH);
-//    digitalWrite(ledPin3, HIGH);//spento
-//    delay(1000);
-  }
-
-
 }
 
 void loop() {
@@ -167,6 +117,11 @@ void loop() {
         // read the input on analog pin 0:
         int sensorValue = analogRead(A0);
 
+        Serial.print("PM10 serial: ");
+        Serial.println(pm10_serial);
+        Serial.print("PM2.5 serial: ");
+        Serial.println(pm25_serial);
+
         int pm10 = pm10_serial / 10;
         int pm25 = pm25_serial / 10;
 
@@ -195,7 +150,7 @@ void loop() {
     }
     delay(500);
   } else {
-    Serial.println("No active BT connections");
+    Serial.println("No active connections..");
     BLE.advertise();
     central = BLE.central();
     digitalWrite(ledPin, HIGH);

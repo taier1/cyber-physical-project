@@ -28,13 +28,8 @@ public class SampleGattAttributes {
 
     static {
         // Sample Services.
-        attributes.put("0000180d-0000-1000-8000-00805f9b34fb", "Heart Rate Service");
-        attributes.put("0000180a-0000-1000-8000-00805f9b34fb", "Device Information Service");
-        attributes.put("0000180f-0000-1000-8000-00805f9b34fb", "sensor service");
-        attributes.put("00002a19-0000-1000-8000-00805f9b34fb", "characteristic");
-        // Sample Characteristics.
-        attributes.put(HEART_RATE_MEASUREMENT, "Heart Rate Measurement");
-        attributes.put("00002a29-0000-1000-8000-00805f9b34fb", "Manufacturer Name String");
+        attributes.put("0000a137-0000-1000-8000-00805f9b34fb", "Mobile phone service");
+        attributes.put("0000a138-0000-1000-8000-00805f9b34fb", "Pollution characteristic");
     }
 
     public static String lookup(String uuid, String defaultName) {

@@ -26,6 +26,7 @@ let hilightRow = function(bikeId){
     }else if(higlightedrow === '#row' + bikeId){
         $(higlightedrow).css('background-color', '');
         higlightedrow = null;
+        return;
     }else{
         $(higlightedrow).css('background-color', '');
         $('#row' + bikeId).css('background-color', 'yellow');
