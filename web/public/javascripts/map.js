@@ -76,7 +76,7 @@ $( document ).ready(function() {
             let long = data[i]['long'];
             let lat = data[i]['lat'];
             let bikeId = data[i]['bikeId'];
-            addMarker(lat, long, bikeId , false)
+            addMarker(lat, long, bikeId , true)
         }
     })
 })
