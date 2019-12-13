@@ -53,24 +53,24 @@ let addMarker = function(data, current, color, position) {
             hilightRow(bikeId)
         });
 
-        map.on('zoomend', function() {
+        map.on('zoomlevelschange', function() {
             let bikeIconZoom = L.icon({
                 iconUrl: '../images/bike.png',
                 iconSize:     [map.getZoom()*1.5, map.getZoom()*1.5], // size of the icon
                 iconAnchor:   [23, 0], // point of the icon which will correspond to marker's location
                 popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
             });
-            map.removeLayer(currentMarker[position]);
             marker1 = L.marker([lat, long], {icon: bikeIconZoom},{title: bikeId});
-            currentMarker[position] = marker1;
+            map.removeLayer(currentMarker[position]);
             currentMarker[position] = marker1;
             // marker1.addTo(map);
         });
     } else {
-        let pMarker = L.circle([lat, long], 50, {
+        let pMarker = L.circle([lat, long], 5, {
             color: color,
             fillColor: color,
-            fillOpacity: 0.5
+            fillOpacity: 0.1,
+            weight:0
         }).addTo(map).bindPopup(bikeId);
         previousMarker.push(pMarker);
     }
