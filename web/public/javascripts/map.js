@@ -22,7 +22,6 @@ let addMarker = function(data, current) {
     if (current) {
         let bikeIcon = L.icon({
             iconUrl: '../images/bike.png',
-
             iconSize:     [map.getZoom()*0.5, map.getZoom()*0.5], // size of the icon
             iconAnchor:   [23, 0], // point of the icon which will correspond to marker's location
             popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
@@ -34,13 +33,12 @@ let addMarker = function(data, current) {
         map.on('zoomend', function() {
             let bikeIconZoom = L.icon({
                 iconUrl: '../images/bike.png',
-
                 iconSize:     [map.getZoom()*1.5, map.getZoom()*1.5], // size of the icon
                 iconAnchor:   [23, 0], // point of the icon which will correspond to marker's location
                 popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
             });
             map.removeLayer(marker1);
-            marker1 = L.marker([lat, long], {icon: bikeIconZoom},{title: title});
+            marker1 = L.marker([lat, long], {icon: bikeIconZoom},{title: bikeId});
             marker1.addTo(map);
             // marker1.addTo(map);
         });
@@ -92,7 +90,7 @@ let fetchPreviousPositions = function (next) {
     });
 };
 
-let updateBikeMarke = function (data) {
+let updateBikeMarker = function (data) {
     let long = data['long'];
     let lat = data['lat'];
     let bikeId = data['bikeId'];
@@ -138,35 +136,35 @@ let addCurrentPositionsToMap = function () {
                 if (latestTimeStamp !== data[i]['createdAt']) {
                     updateMap(data, i)
                     updateTableRow(data[i])
-                    updateBikeMarke(data[i])
+                    updateBikeMarker(data[i])
                 }
             } else {
                 dataMap[data[i]['bikeId']] = {};
                 updateMap(data, i)
                 updateTableRow(data[i])
-                updateBikeMarke(data[i])
+                updateBikeMarker(data[i])
             }
 
         }
     })
-}
+};
 
-let addPreviousPositionsToMap = function () {
-    fetchPreviousPositions(function (data) {
-        for (var i = 0; i < data.length; i++) {
-            let long = data[i]['long'];
-            let lat = data[i]['lat'];
-            let bikeId = data[i]['bikeId'];
-            addMarker(lat, long, bikeId, false)
-        }
-    })
-}
+// let addPreviousPositionsToMap = function () {
+//     fetchPreviousPositions(function (data) {
+//         for (var i = 0; i < data.length; i++) {
+//             let long = data[i]['long'];
+//             let lat = data[i]['lat'];
+//             let bikeId = data[i]['bikeId'];
+//             addMarker(lat, long, bikeId, false)
+//         }
+//     })
+// }
 
 let timeout = function () {
     setTimeout(function () {
         addCurrentPositionsToMap()
         timeout()
-    }, 1000);
+    }, 10000);
 }
 
 
