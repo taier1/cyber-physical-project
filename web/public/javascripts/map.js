@@ -1,5 +1,7 @@
 var markers = [];
 var map;
+let dataMap = {};
+
 
 let mapSetup = function () {
     map = L.map('map', {
@@ -97,6 +99,24 @@ let updateBikeMarker = function (data) {
     addMarker(data, true)
 }
 
+let updateAverage = function(){
+    let totalAirQuality = 0;
+    let totalPM10 = 0;
+    let totalPM25 = 0;
+    for (let key in dataMap) {
+        totalAirQuality += dataMap[key]['airQuality'];
+        totalPM10 += dataMap[key]['pm10'];
+        totalPM25 += dataMap[key]['pm25'];
+    }
+
+    $('#tfoot').replaceWith('<tfoot id="tfoot">' +
+        '<tr><th>Average</th>' +
+        '<th>'+totalAirQuality / Object.keys(dataMap).length+'</th>' +
+        '<th>'+totalPM10 / Object.keys(dataMap).length+'</th>' +
+        '<th>'+totalPM25 / Object.keys(dataMap).length+'</th></tr>' +
+        '</tfoot>')
+}
+
 let updateTableRow = function (bikeObj) {
     if ($('#tbody').children().length === 0 || document.getElementById('row' + bikeObj["bikeId"]) === null) {
         $('#tbody').append('<tr id="row' + bikeObj["bikeId"] + '">' +
@@ -115,13 +135,14 @@ let updateTableRow = function (bikeObj) {
         )
     }
 
+    updateAverage()
+
     var $elements = $('#row' + bikeObj["bikeId"]).addClass('highlight');
     setTimeout(function () {
         $elements.removeClass('highlight')
     }, 4000);
 }
 
-let dataMap = {};
 let updateMap = function (data, i) {
     dataMap[data[i]['bikeId']]['timestamp'] = data[i]['createdAt'];
     dataMap[data[i]['bikeId']]['pm10'] = data[i]['pm10'];
