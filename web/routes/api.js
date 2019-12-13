@@ -50,10 +50,10 @@ router.get('/getPreviousPositions', function (req,res,next) {
     if (err) throw err;
     var dbo = db.db(dbName);
     dbo.collection(collectionName).find().sort({createdAt:-1}).toArray(function (err, result) {
-      let cleanResult = result.splice(0,1);
+      let cleanResult = result.slice(1);
       res.json(cleanResult)
     });
   });
-})
+});
 
 module.exports = router;
