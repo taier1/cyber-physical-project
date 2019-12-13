@@ -45,4 +45,15 @@ router.get('/getCurrentPositions', function (req,res,next) {
   });
 })
 
+router.get('/getPreviousPositions', function (req,res,next) {
+  MongoClient.connect(url, options, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db(dbName);
+    dbo.collection(collectionName).find().sort({createdAt:-1}).toArray(function (err, result) {
+      let cleanResult = result.splice(0,1);
+      res.json(cleanResult)
+    });
+  });
+})
+
 module.exports = router;
