@@ -57,9 +57,9 @@ let fakeData = function () {
     }
 }
 
-let fetchData = function(next){
+let fetchCurrentPositions = function(next){
     $.ajax({
-        url: "/api/update",
+        url: "/api/getCurrentPositions",
         type: 'GET',
         dataType: 'json', // added data type
         success: function(res) {
@@ -70,8 +70,7 @@ let fetchData = function(next){
 
 $( document ).ready(function() {
     mapSetup();
-    // fakeData();
-    fetchData(function (data) {
+    fetchCurrentPositions(function (data) {
         console.log(data)
         for(var i = 0 ; i < data.length; i ++){
             let long = data[i]['long'];

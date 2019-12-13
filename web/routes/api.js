@@ -25,15 +25,29 @@ router.post('/update', function (req,res,next) {
   })
 })
 
-router.get('/update', function (req,res,next) {
+router.get('/getCurrentPositions', function (req,res,next) {
   MongoClient.connect(url, options, function (err, db) {
     if (err) throw err;
     var dbo = db.db(dbName);
-    dbo.collection(collectionName).find({}).sort({createdAt: -1}).limit(100).toArray(function (err, result) {
-      if (err) throw err;
-      res.json(result);
-      db.close();
-    });
+    // dbo.collection(collectionName).find({}).sort({createdAt: -1}).limit(100).toArray(function (err, result) {
+    //   if (err) throw err;
+    //   res.json(result);
+    //   db.close();
+    // });
+
+    dbo.collection(collectionName).distinct('bikeId', function (err, bikeIds) {
+      if (err) return callback(err);
+      let results = [];
+      for(let i = 0 ; i < bikeIds.length; i ++){
+        let bikeId = bikeIds[i];
+        dbo.collection(collectionName).find({"bikeId" : bikeId}).sort({createdAt: -1}).limit(1).toArray(function (err, result) {
+          result.push(result);
+          if(i === results.length){
+            resjson(result)
+          }
+        });
+      }
+    })
   });
 })
 
