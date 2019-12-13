@@ -1,98 +1,193 @@
-$(function() {
-// Themes begin
-am4core.useTheme(am4themes_animated);
-// Themes end
+var markers = [];
+var map;
+let dataMap = {};
 
 
-// Create map instance
-var chart = am4core.create("chartdiv", am4maps.MapChart);
+let mapSetup = function () {
+    map = L.map('map', {
+        minZoom: 11
+    }).setView([46.0037, 8.9511], 15);
+    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    var osmLayer = new L.TileLayer(osmUrl, {
+        maxZoom: 19,
+        attribution: 'Map data © OpenStreetMap contributors'
+    });
+    map.addLayer(osmLayer);
+};
 
-// Set map definition
-chart.geodata = am4geodata_worldHigh;
+let addMarker = function(data, current) {
+    let long = data['long'];
+    let lat = data['lat'];
+    let bikeId = data['bikeId'];
+    let marker1;
 
-// Set projection
-chart.projection = new am4maps.projections.Mercator();
+    if (current) {
+        let bikeIcon = L.icon({
+            iconUrl: '../images/bike.png',
+            iconSize:     [map.getZoom()*1.5, map.getZoom()*1.5], // size of the icon
+            iconAnchor:   [23, 0], // point of the icon which will correspond to marker's location
+            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+        });
 
-// Center on the groups by default
-chart.homeZoomLevel = 6;
-chart.homeGeoPoint = { longitude: 10, latitude: 51 };
+        marker1 = L.marker([lat, long], {icon: bikeIcon},{title: bikeId});
+        marker1.addTo(map);
 
-// Polygon series
-var polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
-polygonSeries.exclude = ["AQ"];
-polygonSeries.useGeodata = true;
-polygonSeries.nonScalingStroke = true;
-polygonSeries.strokeOpacity = 0.5;
+        map.on('zoomend', function() {
+            let bikeIconZoom = L.icon({
+                iconUrl: '../images/bike.png',
+                iconSize:     [map.getZoom()*1.5, map.getZoom()*1.5], // size of the icon
+                iconAnchor:   [23, 0], // point of the icon which will correspond to marker's location
+                popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+            });
+            map.removeLayer(marker1);
+            marker1 = L.marker([lat, long], {icon: bikeIconZoom},{title: bikeId});
+            marker1.addTo(map);
+            // marker1.addTo(map);
+        });
+    }
 
-// Image series
-var imageSeries = chart.series.push(new am4maps.MapImageSeries());
-var imageTemplate = imageSeries.mapImages.template;
-imageTemplate.propertyFields.longitude = "longitude";
-imageTemplate.propertyFields.latitude = "latitude";
-imageTemplate.nonScaling = true;
+    if (!current) {
+        var circle = L.circle([lat, long], 50, {
+            color: color,
+            fillColor: '#f03',
+            fillOpacity: 0.5
+        }).addTo(map).bindPopup(title);
 
-var image = imageTemplate.createChild(am4core.Image);
-image.propertyFields.href = "imageURL";
-image.width = 50;
-image.height = 50;
-image.horizontalCenter = "middle";
-image.verticalCenter = "middle";
+        markers.push(marker1);
+    }
+};
 
-var label = imageTemplate.createChild(am4core.Label);
-// label.text = "{label}";\
-label.hover = "{label}";
-label.horizontalCenter = "middle";
-label.verticalCenter = "top";
-label.dy = 20;
+let _markerFunction = function (id) {
+    for (var i in markers) {
+        var markerID = markers[i].options.title;
+        if (markerID == id) {
+            markers[i].openPopup();
+        }
+    }
+};
 
-imageSeries.data = [{
-  "latitude": 40.416775,
-  "longitude": -3.703790,
-  "imageURL": "https://www.amcharts.com/lib/images/weather/animated/rainy-1.svg",
-  "width": 32,
-  "height": 32,
-  "label": "Madrid: +22C"
-}, {
-  "latitude": 48.856614,
-  "longitude": 2.352222,
-  "imageURL": "https://www.amcharts.com/lib/images/weather/animated/thunder.svg",
-  "width": 32,
-  "height": 32,
-  "label": "Paris: +18C"
-}, {
-  "latitude": 52.520007,
-  "longitude": 13.404954,
-  "imageURL": "https://www.amcharts.com/lib/images/weather/animated/cloudy-day-1.svg",
-  "width": 32,
-  "height": 32,
-  "label": "Berlin: +13C"
-}, {
-  "latitude": 52.229676,
-  "longitude": 21.012229,
-  "imageURL": "https://www.amcharts.com/lib/images/weather/animated/day.svg",
-  "width": 32,
-  "height": 32,
-  "label": "Warsaw: +22C"
-}, {
-  "latitude": 41.872389,
-  "longitude": 12.480180,
-  "imageURL": "https://www.amcharts.com/lib/images/weather/animated/day.svg",
-  "width": 32,
-  "height": 32,
-  "label": "Rome: +29C"
-}, {
-  "latitude": 51.507351,
-  "longitude": -0.127758,
-  "imageURL": "https://www.amcharts.com/lib/images/weather/animated/rainy-7.svg",
-  "width": 32,
-  "height": 32,
-  "label": "London: +10C"
-}, {
-  "latitude": 59.329323,
-  "longitude": 18.068581,
-  "imageURL": "https://www.amcharts.com/lib/images/weather/animated/rainy-1.svg",
-  "width": 32,
-  "height": 32,
-  "label": "Stockholm: +8C"
-} ];
+$("a").click(function () {
+    markerFunction($(this)[0].id);
 });
+
+let fetchCurrentPositions = function (next) {
+    $.ajax({
+        url: "/api/getCurrentPositions",
+        type: 'GET',
+        dataType: 'json', // added data type
+        success: function (res) {
+            next(res)
+        }
+    });
+};
+
+let fetchPreviousPositions = function (next) {
+    $.ajax({
+        url: "/api/getPreviousPositions",
+        type: 'GET',
+        dataType: 'json', // added data type
+        success: function (res) {
+            next(res)
+        }
+    });
+};
+
+let updateBikeMarker = function (data) {
+    let long = data['long'];
+    let lat = data['lat'];
+    let bikeId = data['bikeId'];
+    addMarker(data, true)
+}
+
+let updateAverage = function(){
+    let totalAirQuality = 0;
+    let totalPM10 = 0;
+    let totalPM25 = 0;
+    for (let key in dataMap) {
+        totalAirQuality += dataMap[key]['airQuality'];
+        totalPM10 += dataMap[key]['pm10'];
+        totalPM25 += dataMap[key]['pm25'];
+    }
+
+    $('#tfoot').replaceWith('<tfoot id="tfoot">' +
+        '<tr><th>Average</th>' +
+        '<th>'+totalAirQuality / Object.keys(dataMap).length+'</th>' +
+        '<th>'+totalPM10 / Object.keys(dataMap).length+'</th>' +
+        '<th>'+totalPM25 / Object.keys(dataMap).length+'</th></tr>' +
+        '</tfoot>')
+}
+
+let updateTableRow = function (bikeObj) {
+    if ($('#tbody').children().length === 0 || document.getElementById('row' + bikeObj["bikeId"]) === null) {
+        $('#tbody').append('<tr id="row' + bikeObj["bikeId"] + '">' +
+            '<th>' + bikeObj["bikeId"] + '</th>' +
+            '<td>' + bikeObj["airQuality"] + '</td>' +
+            '<td>' + bikeObj["pm10"] + '</td>' +
+            '<td>' + bikeObj["pm25"] + '</td>' +
+            '</tr>')
+    } else {
+        $('#row' + bikeObj["bikeId"]).replaceWith('<tr id="row' + bikeObj["bikeId"] + '">' +
+            '<th>' + bikeObj["bikeId"] + '</th>' +
+            '<td>' + bikeObj["airQuality"] + '</td>' +
+            '<td>' + bikeObj["pm10"] + '</td>' +
+            '<td>' + bikeObj["pm25"] + '</td>' +
+            '</tr>'
+        )
+    }
+
+    updateAverage()
+
+    var $elements = $('#row' + bikeObj["bikeId"]).addClass('highlight');
+    setTimeout(function () {
+        $elements.removeClass('highlight')
+    }, 4000);
+}
+
+let updateMap = function (data, i) {
+    dataMap[data[i]['bikeId']]['timestamp'] = data[i]['createdAt'];
+    dataMap[data[i]['bikeId']]['pm10'] = data[i]['pm10'];
+    dataMap[data[i]['bikeId']]['pm25'] = data[i]['pm25'];
+    dataMap[data[i]['bikeId']]['airQuality'] = data[i]['airQuality'];
+}
+let addCurrentPositionsToMap = function () {
+    fetchCurrentPositions(function (data) {
+        for (var i = 0; i < data.length; i++) {
+            if (data[i]['bikeId'] in dataMap) {
+                let latestTimeStamp = dataMap[data[i]['bikeId']]['timestamp']
+                if (latestTimeStamp !== data[i]['createdAt']) {
+                    updateMap(data, i)
+                    updateTableRow(data[i])
+                    updateBikeMarker(data[i])
+                }
+            } else {
+                dataMap[data[i]['bikeId']] = {};
+                updateMap(data, i)
+                updateTableRow(data[i])
+                updateBikeMarker(data[i])
+            }
+
+        }
+    })
+};
+
+// let addPreviousPositionsToMap = function () {
+//     fetchPreviousPositions(function (data) {
+//         for (var i = 0; i < data.length; i++) {
+//             let long = data[i]['long'];
+//             let lat = data[i]['lat'];
+//             let bikeId = data[i]['bikeId'];
+//             addMarker(lat, long, bikeId, false)
+//         }
+//     })
+// }
+
+let timeout = function () {
+    setTimeout(function () {
+        addCurrentPositionsToMap()
+        timeout()
+    }, 1000);
+}
+
+
+mapSetup();
+timeout()

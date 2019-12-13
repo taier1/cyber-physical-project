@@ -1,7 +1,34 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-  #chartdiv
 
+  .container-fluid
+    .mapbox
+      #map.dvContainer(style='min-width:100%;height: 600px;')
+
+
+
+  .container
+    div(class="table__wrapper")
+      table.table
+        thead
+          tr
+
+            th Bike ID
+            th Air Quality
+
+            th PM10
+            th PM2.5
+        tfoot#tfoot
+          tr
+            th Average
+            th 0.0
+            th 0.0
+            th 0.0
+
+        tbody#tbody
+
+
+
+
+  script(src='javascripts/map.js')
