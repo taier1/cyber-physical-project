@@ -84,17 +84,47 @@ let fetchCurrentPositions = function(next){
             next(res)
         }
     });
-}
+};
 
-$( document ).ready(function() {
-    mapSetup();
+let fetchPreviousPositions = function(next){
+    $.ajax({
+        url: "/api/getPreviousPositions",
+        type: 'GET',
+        dataType: 'json', // added data type
+        success: function(res) {
+            next(res)
+        }
+    });
+};
+
+
+let addCurrentPositionsToMap = function() {
     fetchCurrentPositions(function (data) {
-        console.log(data)
-        for(var i = 0 ; i < data.length; i ++){
+        for (var i = 0; i < data.length; i++) {
             let long = data[i]['long'];
             let lat = data[i]['lat'];
             let bikeId = data[i]['bikeId'];
-            addMarker(lat, long, bikeId , true)
+            addMarker(lat, long, bikeId, true)
         }
     })
+}
+
+let addPreviousPositionsToMap = function() {
+    fetchPreviousPositions(function (data) {
+        for (var i = 0; i < data.length; i++) {
+            let long = data[i]['long'];
+            let lat = data[i]['lat'];
+            let bikeId = data[i]['bikeId'];
+            addMarker(lat, long, bikeId, false)
+        }
+    })
+}
+
+
+
+$( document ).ready(function() {
+    mapSetup();
+
+    addCurrentPositionsToMap()
+    addPreviousPositionsToMap()
 })
