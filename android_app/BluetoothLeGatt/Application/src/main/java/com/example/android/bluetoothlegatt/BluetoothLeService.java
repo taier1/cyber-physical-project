@@ -33,6 +33,15 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,6 +62,7 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.EXTRA_DATA";
     public final static UUID UUID_HEART_RATE_MEASUREMENT =
             UUID.fromString(SampleGattAttributes.HEART_RATE_MEASUREMENT);
+    private final static String uniqueID = UUID.randomUUID().toString();
     private final static String TAG = BluetoothLeService.class.getSimpleName();
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -64,6 +74,9 @@ public class BluetoothLeService extends Service {
     private BluetoothGatt mBluetoothGatt;
     private Location lastLocation;
     private int mConnectionState = STATE_DISCONNECTED;
+    private RequestQueue queue;
+    private int notificationsCounter = 0;
+
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
@@ -127,6 +140,7 @@ public class BluetoothLeService extends Service {
     private void broadcastUpdate(final String action,
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
+        notificationsCounter++;
 
         // This is special handling for the Heart Rate Measurement profile.  Data parsing is
         // carried out as per profile specifications:
@@ -150,13 +164,47 @@ public class BluetoothLeService extends Service {
             // For all other profiles, writes the data formatted in HEX.
             final byte[] data = characteristic.getValue();
 //            Log.e("asd", data.toString());
-            if (data != null && data.length > 0) {
+            String receivedData = new String(data);
+            if (data != null && data.length > 0 && lastLocation != null) {
+                String url = "https://webhook.site/b1352919-02cb-46c6-91f9-345fcbb1f07c";
+                String[] parts = receivedData.split(";");
+
+                // example:
+//                {
+//                    "createdAt": "2019-12-13T09:22:49.824Z",
+//                        "lat": 46.0037,
+//                        "long": 8.9511 ,
+//                        "bikeId" : "BikeId",
+//                        "pm10": 0.01,
+//                        "pm25": 0.01,
+//                        "airQuality": 0.01
+//                }
+                // airQuality,pm10,pm25;0000000000000000
+
+                String[] fields = parts[0].split(",");
+
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("createdAt", Instant.now().toString());
+                    json.put("lat", lastLocation.getLatitude());
+                    json.put("long", lastLocation.getLongitude());
+                    json.put("bikeId", uniqueID);
+                    json.put("pm10", fields[1]);
+                    json.put("pm25", fields[2]);
+                    json.put("airQuality", fields[0]);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                        (Request.Method.POST, url, json, response -> {
+//                                textView.setText("Response: " + response.toString());
+                        }, error -> {
+                        });
+                queue.add(jsonObjectRequest);
+
                 final StringBuilder stringBuilder = new StringBuilder(data.length);
-                Log.e("data", stringBuilder.toString());
-                // TODO: get GPS data
-                // TODO: get location
-                if (lastLocation != null)
-                    Log.e("current location", String.format("%f, %f", lastLocation.getLatitude(), lastLocation.getLongitude()));
+                Log.e("data", new String(data));
+                Log.e("current location", String.format("%f, %f", lastLocation.getLatitude(), lastLocation.getLongitude()));
                 for (byte byteChar : data)
                     stringBuilder.append(String.format("%02X ", byteChar));
                 intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
@@ -194,6 +242,8 @@ public class BluetoothLeService extends Service {
                 return false;
             }
         }
+
+        queue = Volley.newRequestQueue(this);
 
         mBluetoothAdapter = mBluetoothManager.getAdapter();
         if (mBluetoothAdapter == null) {
