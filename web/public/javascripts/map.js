@@ -17,8 +17,8 @@ let mapSetup = function () {
 
 let previousMarker = [];
 let currentMarker = [];
-let currentCount = -1;
 let higlightedrow = null;
+let currentCount = -1;
 
 let hilightRow = function(bikeId){
     if(higlightedrow == null) {
@@ -31,9 +31,9 @@ let hilightRow = function(bikeId){
         $('#row' + bikeId).css('background-color', 'yellow');
     }
     higlightedrow= '#row' + bikeId;
-}
+};
 
-let addMarker = function(data, current, color, position) {
+let addMarker = function(data, current, color) {
     let long = data['long'];
     let lat = data['lat'];
     let bikeId = data['bikeId'];
@@ -48,22 +48,9 @@ let addMarker = function(data, current, color, position) {
         });
 
         marker1 = L.marker([lat, long], {icon: bikeIcon}, {title: bikeId});
-        currentMarker[position] = marker1;
+        currentMarker.push(marker1);
         marker1.addTo(map).on('click', function(e) {
             hilightRow(bikeId)
-        });
-
-        map.on('zoomlevelschange', function() {
-            let bikeIconZoom = L.icon({
-                iconUrl: '../images/bike.png',
-                iconSize:     [map.getZoom()*1.5, map.getZoom()*1.5], // size of the icon
-                iconAnchor:   [23, 0], // point of the icon which will correspond to marker's location
-                popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-            });
-            marker1 = L.marker([lat, long], {icon: bikeIconZoom},{title: bikeId});
-            map.removeLayer(currentMarker[position]);
-            currentMarker[position] = marker1;
-            // marker1.addTo(map);
         });
     } else {
         let pMarker = L.circle([lat, long], 5, {
@@ -71,7 +58,9 @@ let addMarker = function(data, current, color, position) {
             fillColor: color,
             fillOpacity: 0.1,
             weight:0
-        }).addTo(map).bindPopup(bikeId);
+        }).addTo(map).bindPopup("Air Quality: " + data["airQuality"] + "<br>" +
+            "PM 10: " + data["pm10"] + "<br>" +
+            "PM 25: " + data["pm25"] );
         previousMarker.push(pMarker);
     }
 };
@@ -163,7 +152,6 @@ let addCurrentPositionsToMap = function () {
     fetchCurrentPositions(function (data) {
         if (currentCount !== data.length)
             currentMarker.forEach(marker => map.removeLayer(marker));
-            currentCount = data.length;
 
         for (var i = 0; i < data.length; i++) {
             if (data[i]['bikeId'] in dataMap) {
@@ -181,8 +169,10 @@ let addCurrentPositionsToMap = function () {
             }
         }
 
-        currentMarker.forEach(marker => marker.addTo(map));
-
+        if (currentCount !== data.length) {
+            currentMarker.forEach(marker => marker.addTo(map));
+            currentCount = data.length;
+        }
     })
 };
 
