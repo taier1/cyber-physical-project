@@ -49,4 +49,21 @@ body {
     background-color: cornflowerblue;;
 }
 
+.bikeId{
+    cursor: pointer;
+}
+
+.bikeId:hover{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.flash {
+    -webkit-animation-name: flash-animation;
+    -webkit-animation-duration: 0.3s;
+
+    animation-name: flash-animation;
+    animation-duration: 0.3s;
+}
+
 

@@ -15,6 +15,7 @@ router.post('/update', function (req,res,next) {
 
   MongoClient.connect(url, options, function (err, db) {
     if (err) throw err;
+    var dbo = db.db(dbName);
     dbo.collection(collectionName).insertOne( req.body, function(error, record){
       if (error) throw error;
       console.log("data saved "   + JSON.stringify(req.body));

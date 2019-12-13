@@ -1,4 +1,4 @@
-var markers = [];
+var markers = {};
 var map;
 let dataMap = {};
 
@@ -15,6 +15,20 @@ let mapSetup = function () {
     map.addLayer(osmLayer);
 };
 
+let higlightedrow = null;
+let hilightRow = function(bikeId){
+    if(higlightedrow == null) {
+        $('#row' + bikeId).css('background-color', 'yellow');
+    }else if(higlightedrow === '#row' + bikeId){
+        $(higlightedrow).css('background-color', '');
+        higlightedrow = null;
+    }else{
+        $(higlightedrow).css('background-color', '');
+        $('#row' + bikeId).css('background-color', 'yellow');
+    }
+    higlightedrow= '#row' + bikeId;
+}
+
 let addMarker = function(data, current) {
     let long = data['long'];
     let lat = data['lat'];
@@ -29,8 +43,10 @@ let addMarker = function(data, current) {
             popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
 
-        marker1 = L.marker([lat, long], {icon: bikeIcon},{title: bikeId});
-        marker1.addTo(map);
+        marker1 = L.marker([lat, long], {icon: bikeIcon}, {title: bikeId});
+        marker1.addTo(map).on('click', function(e) {
+            hilightRow(bikeId)
+        });
 
         map.on('zoomend', function() {
             let bikeIconZoom = L.icon({
@@ -41,9 +57,11 @@ let addMarker = function(data, current) {
             });
             map.removeLayer(marker1);
             marker1 = L.marker([lat, long], {icon: bikeIconZoom},{title: bikeId});
-            marker1.addTo(map);
-            // marker1.addTo(map);
+            marker1.addTo(map).on('click', function(e) {
+                console.log(bikeId);
+            });
         });
+        markers[bikeId] = marker1;
     }
 
     if (!current) {
@@ -52,19 +70,9 @@ let addMarker = function(data, current) {
             fillColor: '#f03',
             fillOpacity: 0.5
         }).addTo(map).bindPopup(title);
-
-        markers.push(marker1);
     }
 };
 
-let _markerFunction = function (id) {
-    for (var i in markers) {
-        var markerID = markers[i].options.title;
-        if (markerID == id) {
-            markers[i].openPopup();
-        }
-    }
-};
 
 $("a").click(function () {
     markerFunction($(this)[0].id);
@@ -117,17 +125,18 @@ let updateAverage = function(){
         '</tfoot>')
 }
 
+
 let updateTableRow = function (bikeObj) {
     if ($('#tbody').children().length === 0 || document.getElementById('row' + bikeObj["bikeId"]) === null) {
         $('#tbody').append('<tr id="row' + bikeObj["bikeId"] + '">' +
-            '<th>' + bikeObj["bikeId"] + '</th>' +
+            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +'">' + bikeObj["bikeId"] + '</th>' +
             '<td>' + bikeObj["airQuality"] + '</td>' +
             '<td>' + bikeObj["pm10"] + '</td>' +
             '<td>' + bikeObj["pm25"] + '</td>' +
             '</tr>')
     } else {
         $('#row' + bikeObj["bikeId"]).replaceWith('<tr id="row' + bikeObj["bikeId"] + '">' +
-            '<th>' + bikeObj["bikeId"] + '</th>' +
+            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +'">' + bikeObj["bikeId"] + '</th>' +
             '<td>' + bikeObj["airQuality"] + '</td>' +
             '<td>' + bikeObj["pm10"] + '</td>' +
             '<td>' + bikeObj["pm25"] + '</td>' +
@@ -142,6 +151,10 @@ let updateTableRow = function (bikeObj) {
         $elements.removeClass('highlight')
     }, 4000);
 }
+
+$(".bikeId").click(function () {
+    console.log("click")
+});
 
 let updateMap = function (data, i) {
     dataMap[data[i]['bikeId']]['timestamp'] = data[i]['createdAt'];
@@ -188,6 +201,15 @@ let timeout = function () {
     }, 1000);
 }
 
+let handleBikeTableClick = function(document){
+    $(document).on('click',".bikeId",function (e) {
+        console.log($(e.target).attr('data-id'));
+    });
+}
 
-mapSetup();
-timeout()
+$(document).ready(function () {
+    mapSetup();
+    timeout()
+
+    handleBikeTableClick(document)
+})
