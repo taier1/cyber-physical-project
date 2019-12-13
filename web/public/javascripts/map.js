@@ -1,5 +1,7 @@
-var markers = [];
+var markers = {};
 var map;
+let dataMap = {};
+
 
 let mapSetup = function () {
     map = L.map('map', {
@@ -16,6 +18,20 @@ let mapSetup = function () {
 let previousMarker = [];
 let currentMarker = [];
 let currentCount = -1;
+let higlightedrow = null;
+
+let hilightRow = function(bikeId){
+    if(higlightedrow == null) {
+        $('#row' + bikeId).css('background-color', 'yellow');
+    }else if(higlightedrow === '#row' + bikeId){
+        $(higlightedrow).css('background-color', '');
+        higlightedrow = null;
+    }else{
+        $(higlightedrow).css('background-color', '');
+        $('#row' + bikeId).css('background-color', 'yellow');
+    }
+    higlightedrow= '#row' + bikeId;
+}
 
 let addMarker = function(data, current, color, position) {
     let long = data['long'];
@@ -31,8 +47,11 @@ let addMarker = function(data, current, color, position) {
             popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
 
-        marker1 = L.marker([lat, long], {icon: bikeIcon},{title: bikeId});
+        marker1 = L.marker([lat, long], {icon: bikeIcon}, {title: bikeId});
         currentMarker[position] = marker1;
+        marker1.addTo(map).on('click', function(e) {
+            hilightRow(bikeId)
+        });
 
         map.on('zoomend', function() {
             let bikeIconZoom = L.icon({
@@ -43,6 +62,7 @@ let addMarker = function(data, current, color, position) {
             });
             map.removeLayer(currentMarker[position]);
             marker1 = L.marker([lat, long], {icon: bikeIconZoom},{title: bikeId});
+            currentMarker[position] = marker1;
             currentMarker[position] = marker1;
             // marker1.addTo(map);
         });
@@ -56,14 +76,6 @@ let addMarker = function(data, current, color, position) {
     }
 };
 
-let _markerFunction = function (id) {
-    for (var i in markers) {
-        var markerID = markers[i].options.title;
-        if (markerID == id) {
-            markers[i].openPopup();
-        }
-    }
-};
 
 $("a").click(function () {
     markerFunction($(this)[0].id);
@@ -95,17 +107,36 @@ let updateBikeMarker = function (data, position) {
     addMarker(data, true, null, position);
 };
 
+let updateAverage = function(){
+    let totalAirQuality = 0;
+    let totalPM10 = 0;
+    let totalPM25 = 0;
+    for (let key in dataMap) {
+        totalAirQuality += dataMap[key]['airQuality'];
+        totalPM10 += dataMap[key]['pm10'];
+        totalPM25 += dataMap[key]['pm25'];
+    }
+
+    $('#tfoot').replaceWith('<tfoot id="tfoot">' +
+        '<tr><th>Average</th>' +
+        '<th>'+totalAirQuality / Object.keys(dataMap).length+'</th>' +
+        '<th>'+totalPM10 / Object.keys(dataMap).length+'</th>' +
+        '<th>'+totalPM25 / Object.keys(dataMap).length+'</th></tr>' +
+        '</tfoot>')
+}
+
+
 let updateTableRow = function (bikeObj) {
     if ($('#tbody').children().length === 0 || document.getElementById('row' + bikeObj["bikeId"]) === null) {
         $('#tbody').append('<tr id="row' + bikeObj["bikeId"] + '">' +
-            '<th>' + bikeObj["bikeId"] + '</th>' +
+            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +'">' + bikeObj["bikeId"] + '</th>' +
             '<td>' + bikeObj["airQuality"] + '</td>' +
             '<td>' + bikeObj["pm10"] + '</td>' +
             '<td>' + bikeObj["pm25"] + '</td>' +
             '</tr>')
     } else {
         $('#row' + bikeObj["bikeId"]).replaceWith('<tr id="row' + bikeObj["bikeId"] + '">' +
-            '<th>' + bikeObj["bikeId"] + '</th>' +
+            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +'">' + bikeObj["bikeId"] + '</th>' +
             '<td>' + bikeObj["airQuality"] + '</td>' +
             '<td>' + bikeObj["pm10"] + '</td>' +
             '<td>' + bikeObj["pm25"] + '</td>' +
@@ -113,13 +144,13 @@ let updateTableRow = function (bikeObj) {
         )
     }
 
+    updateAverage()
+
     var $elements = $('#row' + bikeObj["bikeId"]).addClass('highlight');
     setTimeout(function () {
         $elements.removeClass('highlight')
     }, 4000);
 };
-
-let dataMap = {};
 
 let updateMap = function (data, i) {
     dataMap[data[i]['bikeId']]['timestamp'] = data[i]['createdAt'];
@@ -187,10 +218,20 @@ let timeout = function () {
         addCurrentPositionsToMap();
         addPreviousPositionsToMap();
         timeout()
-    }, 1000);
-};
+    }, 5000);
+}
 
+let handleBikeTableClick = function(document){
+    $(document).on('click',".bikeId",function (e) {
+        console.log($(e.target).attr('data-id'));
+    });
+}
 
-mapSetup();
-timeout();
+$(document).ready(function () {
+    addPreviousPositionsToMap();
+    addCurrentPositionsToMap();
+    mapSetup();
+    timeout();
 
+    handleBikeTableClick(document)
+})

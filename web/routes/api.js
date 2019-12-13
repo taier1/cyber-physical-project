@@ -2,13 +2,13 @@ var express = require('express');
 var router = express.Router();
 var MongoClient = require('mongodb').MongoClient;
 
-const url = "mongodb://localhost:27017/";
+const url = "mongodb://127.0.0.1:27017";
 const dbName = "mindPollution";
 const collectionName = "data";
 
 const options = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useNewUrlParser: true
 }
 
 router.post('/update', function (req,res,next) {
@@ -38,6 +38,7 @@ router.get('/getCurrentPositions', function (req,res,next) {
           results.push(result[0]);
           if(results.length === bikeIds.length){
             res.json(results)
+            db.close()
           }
         });
       }
@@ -52,6 +53,7 @@ router.get('/getPreviousPositions', function (req,res,next) {
     dbo.collection(collectionName).find().sort({createdAt:-1}).toArray(function (err, result) {
       let cleanResult = result.slice(1);
       res.json(cleanResult)
+      db.close()
     });
   });
 });
