@@ -36,3 +36,11 @@ body {
 }
 
 
+.table__wrapper {
+    overflow-x: auto;
+}
+
+.table{
+    margin-left: auto;
+    margin-right: auto;
+}
