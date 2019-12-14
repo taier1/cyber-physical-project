@@ -1,0 +1,100 @@
+\documentclass[12pt]{article}
+
+\usepackage{fancyhdr}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage{systeme}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{ dsfont }
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,positioning,fit}
+\usetikzlibrary{automata, positioning}
+\usetikzlibrary{calc}
+\usepackage[utf8]{inputenc}
+  \geometry{
+    left = 2.5cm,
+    right = 2.5cm,
+    includeheadfoot, top = 1.5cm, bottom = 1.5cm,
+    headsep = 1.3cm,
+    footskip = 1.2cm
+  }
+
+% Inline fraction %
+\newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
+\newcommand{\lincom}[4]{\mathit{{#1}{\underline{#2}}}+\mathit{{#3}{\underline{#4}}}}
+\newcommand*{\QEDA}{\hfill\ensuremath{\blacksquare}}
+\newcommand*{\QEDB}{\hfill\ensuremath{\square}}
+\newcommand{\MU}[1]{\mathit{\underline{#1}}}
+
+\newcommand{\DS}{\displaystyle}
+\newcommand{\bb}[1]{\mathbb{#1}}
+
+% Absolute value: \abs{x} => |x|
+\newcommand{\abs}[1]{\left|#1\right|}
+
+% Function: \func{f}{X}{Y} => f : X -> Y
+\newcommand{\func}[3]{#1 : #2 \rightarrow #3}
+% Function to R: \func{f}{X} => f : X -> R
+\newcommand{\functoR}[2]{#1 : #2 \rightarrow \mathbb{R}}
+% Function to N: \func{f}{X} => f : X -> N
+\newcommand{\functoN}[2]{#1 : #2 \rightarrow \mathbb{N}}
+% Function from R to R: \func{f} => f : R -> R
+\newcommand{\funcR}[1]{#1 : \mathbb{R} \rightarrow \mathbb{R}}
+
+% Limits and convergence
+\newcommand{\limn}{\lim_{n \to \infty}}
+\newcommand{\limh}{\lim_{h \to 0}}
+\newcommand{\limsupn}{\limsup_{n \to \infty}}
+\newcommand{\liminfn}{\liminf_{n \to \infty}}
+\newcommand{\limx}[1]{\lim_{x \to #1}}
+\newcommand{\tounif}{\xrightarrow{unif.}}
+
+% Sums and series
+\newcommand{\sumn}[1]{\sum_{k=1}^n #1}
+\newcommand{\series}[1]{\sum_{k=1}^\infty #1}
+\newcommand{\seriec}[1]{\sum_{k=m}^n #1}
+\newcommand{\pseries}[1]{\sum_{n=0}^\infty #1}
+
+% Intervals
+% Closed-closed interval [a,b]
+\newcommand{\intcc}[1]{\left[#1\right]}
+% Open-closed interval (a,b]
+\newcommand{\intoc}[1]{\left(#1\right]}
+% Closed-open interval [a,b)
+\newcommand{\intco}[1]{\left[#1\right)}
+% Open-open interval (a,b)
+\newcommand{\intoo}[1]{\left(#1\right)}
+
+% Sets
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\e}{\varepsilon}
+
+\lhead{Alexander Fischer, Camillo Malnati, Federico Pfahler, Aldo Gabriele di Rosa}
+\chead{}
+\rhead{}
+\rfoot{\thepage}
+\cfoot{}
+\lfoot{\today}
+\pagestyle{fancy}
+
+\begin{document}
+  \begin{center}
+    \LARGE{\textbf{City Pollution Data Collection}}
+  \end{center}
+  \section{Introduction}
+  \section{Architecture}
+  \subsection{Sensors}
+  \subsection{Android application}
+  \subsection{Web application}
+  \section{Conclusions}
+  
+
+\end{document}
