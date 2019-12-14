@@ -87,15 +87,42 @@
 
 \begin{document}
   \begin{center}
-    \LARGE{\textbf{City Pollution Data Collection}}
+    \LARGE{\textbf{Citybike Pollution Data Collection}}
   \end{center}
   \section{Introduction}
+  \newpage
   \section{Architecture}
   \subsection{Sensors}
   \subsubsection{Air quality}
   \subsubsection{Pollution (PM2.5/PM10)}
   \subsection{Android application}
+  The goal of the Android application is to act as a gateway between the Arduino board that collects pollution data from sensors and the web application that stores and visualizes the aggregated data. While forwarding pollution measures, it also adds the current location coordinates obtained from the phone's GPS sensor.
+
+  The application runs on a mobile phone (in our demo a Huawei P10 lite running Android 8.0) that is connected via Bluetooth to the Arduino Nano 33 BLE board, as well as with an active GSM connection.
+  Its source code is based on an example application, \verb|BluetoothLeGatt|, bundled with the Android SDK, that allows to scan for Bluetooth Low Energy devices and connect to them. 
+
+  What we added to that code was to, on every message received from the Arduino board, retrieve the location coordinates (using the Android FusedLocation API) and send that data together with the pollution information to a web server as a JSON object by performing a POST request. An example of such JSON object is shown in Figure~\ref{lst:json-packet}. On the other hand, the message sent from the board is structured as follows: \verb|123,12,5;|. It contains the measurements from the air quality sensor, as well as the two measured values from the PM2.5/10 sensor.
+
+  %TODO: add screenshots of app
+
+  \begin{figure}[h]
+    \centering
+    \begin{verbatim}
+{
+  "createdAt": "2019-12-13T09:22:49.824Z",
+  "lat": 46.0037,
+  "long": 8.9511 ,
+  "bikeId" : "00002add-0000-1000-8000-00805f9b34fb",
+  "pm10": 5,
+  "pm25": 12,
+  "airQuality": 123
+}
+    \end{verbatim}
+  \caption{An example JSON object containing the pollution measurements and location}\label{lst:json-packet}
+  \end{figure}
+
   \subsection{Web application}
+  \newpage
   \section{Conclusions}
   
 
