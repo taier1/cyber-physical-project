@@ -94,7 +94,7 @@ let fetchPreviousPositions = function (next) {
 };
 
 let updateBikeMarker = function (data, position) {
-    addMarker(data, true, null, position);
+    addMarker(data, true);
 };
 
 let updateAverage = function(){
@@ -134,7 +134,7 @@ let updateTableRow = function (bikeObj) {
         )
     }
 
-    updateAverage()
+    updateAverage();
 
     var $elements = $('#row' + bikeObj["bikeId"]).addClass('highlight');
     setTimeout(function () {
