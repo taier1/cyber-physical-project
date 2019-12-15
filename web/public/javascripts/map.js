@@ -20,6 +20,8 @@ let currentMarker = [];
 let higlightedrow = null;
 let currentCount = -1;
 
+let markerMap = {}
+
 let hilightRow = function(bikeId){
     if(higlightedrow == null) {
         $('#row' + bikeId).css('background-color', 'yellow');
@@ -48,11 +50,20 @@ let addMarker = function(data, current, color) {
             popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
 
+
         marker1 = L.marker([lat, long], {icon: bikeIcon}, {title: bikeId});
         currentMarker.push(marker1);
+
         marker1.addTo(map).on('click', function(e) {
             hilightRow(bikeId)
         });
+
+        if(bikeId in markerMap){
+            map.removeLayer(markerMap[bikeId]);
+            markerMap[bikeId] = marker1
+        }else{
+            markerMap[bikeId] = marker1
+        }
     } else {
         let pMarker = L.circle([lat, long], 5, {
             color: color,
@@ -146,7 +157,7 @@ let updateMap = function (data, i) {
 
 let addCurrentPositionsToMap = function () {
     fetchCurrentPositions(function (data) {
-        currentMarker.forEach(marker => map.removeLayer(marker));
+        // currentMarker.forEach(marker => map.removeLayer(marker));
 
         for (var i = 0; i < data.length; i++) {
             if (data[i]['bikeId'] in dataMap) {
@@ -163,9 +174,6 @@ let addCurrentPositionsToMap = function () {
                 updateBikeMarker(data[i], i)
             }
         }
-
-        currentMarker.forEach(marker => marker.addTo(map));
-        currentCount = data.length;
 
     })
 };
