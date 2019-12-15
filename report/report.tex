@@ -103,6 +103,7 @@
 The broken GPS sensor implied the need to find new ways to get the position of the bike in the city. The first problem is that we couldn't rely on the bike since no requirements said that the public service would have provided this information to our application. The only way to have access to the position was to develop a mobile app that provided the user's locations and transmitting the pollution information from the device directly to the phone. Being now an user-dependant device, we have decided to use the phone application to directly transfer data to the server, abandoning the idea of having data transmission stations. In the end, we also developed a web-application that visualised the collected data.
   \newpage
   \section{Implementation}
+  In order to satisfy the requirements of our project we decided to go with an hybrid architecture with both an arduino board and a smartphone. This architecture was the results of not being able to find a properly working GPS board in time for the project deadline. We think this architecture will prove to be easier to scale with a large number of boards connected to the web server and database.
 
   Figure~\ref{fig:architecture} shows an overview of the architecture of our project, showing the main components.
   \begin{figure}[H]
@@ -173,14 +174,31 @@ The broken GPS sensor implied the need to find new ways to get the position of t
   \end{itemize}
 
   \subsection{Arduino code}
+  The Arduino code is quite easy to understand, it is divided into three main parts: Global variables, setup and main loop:
+
+  \subsubsection{Global variable}
+  We need this first part of the code to declare the global variables for the RGB light, the Bluetooth and the sensors. In particular we save the pins of the integrated RGB light on the Arduino Nano BLE board.
+
+  We then create a buffer for the data we want to send on the Bluetooth as well as the Bluetooth service and characteristic. We defined the maximum length of the buffer sent via Bluetooth as 20 bytes long, that is the threshold we found was perfectly working for the transfer and it was big enough to hold all the data we needed to send in one transmission.
+  The small dust particle sensor need also some variables to decode the protocol from the serial port.
+
+  \subsubsection{setup()}
+  As the name suggest this is the code setting up all we need for the project. First the serial port transmission, then the Bluetooth service to which we assign a specific name and then we start advertising.
+
+  \subsubsection{loop()}
+  This is the main part of the program that is also divided in two main branch. We the device is connected the RGB light turns green and the program reed from the small dust particle serial the data that is coming. There is a specific protocol (\autoref{tab:uart-protocol}) that we need to decode in order to exctract the data, when one correct reading is completed the code take a read also on the air quality sensor and send the data via Bluetooth to the connected smartphone application. The data is sent with a specific sequence that is: \verb|<PM10>,<PM2.5>,<AIR_QUALITY>;|.
+
+  If the device is not connected instead, a blinking blue light will start and the Arduino boards will start advertising again until a device get connected to it.
+    
+
 
   \subsection{Android application}
   The goal of the Android application is to act as a \textit{gateway} between the Arduino board that collects pollution data from sensors and the web application that stores and visualizes the aggregated data. While forwarding pollution measurements, it also adds the current location coordinates obtained from the phone's GPS sensor.
 
   The application runs on a mobile phone (in our demo a Huawei P10 lite running Android 8.0) that is connected via Bluetooth to the Arduino Nano 33 BLE board, as well as with an active GSM connection.
-  Its source code is based on an example application, \verb|BluetoothLeGatt|, which is bundled with the official Android SDK, that allows to scan for Bluetooth Low Energy devices and connect to them. 
+  Its source code is based on an example application, \verb|BluetoothLeGatt|\footnote{Also on Github: https://github.com/android/connectivity-samples/tree/master/BluetoothLeGatt}, which is bundled with the official Android SDK, that allows to scan for Bluetooth Low Energy devices and connect to them. 
 
-  What we added to that code was to, on every message received from the Arduino board, retrieve the location coordinates (using the Android FusedLocation API) and send that data together with the pollution information to a web server as a JSON object by performing a POST request. An example of such JSON object is shown in Figure~\ref{lst:json-packet}. On the other hand, the message sent from the board is structured as follows: \verb|123,12,5;|. It contains the measurements from the air quality sensor, as well as the two measured values from the PM2.5/10 sensor.
+  What we added to that code was to, on every message received from the Arduino board, retrieve the location coordinates (code is adapted from a blog post\footnote{https://medium.com/@ssaurel/getting-gps-location-on-android-with-fused-location-provider-api-1001eb549089}) and send that data together with the pollution information to a web server as a JSON object by performing a POST request. An example of such JSON object is shown in Figure~\ref{lst:json-packet}. On the other hand, the message sent from the board is structured as follows: \verb|123,12,5;|. It contains the measurements from the air quality sensor, as well as the two measured values from the PM2.5/10 sensor.
 
   \begin{figure}[H]
     \centering
