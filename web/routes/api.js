@@ -18,6 +18,7 @@ router.post('/update', function (req,res,next) {
     var dbo = db.db(dbName);
     dbo.collection(collectionName).insertOne( req.body, function(error, record){
       if (error) throw error;
+      req.body['airQuality'] = Number(req.body['airQuality'])
       console.log("data saved "   + JSON.stringify(req.body));
       res.sendStatus(200);
       db.close()
