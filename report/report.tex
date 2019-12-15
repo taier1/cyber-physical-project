@@ -13,6 +13,7 @@
 \usepackage{listings}
 \usepackage{booktabs}
 \usepackage{hyperref}
+\usepackage{float}
 \usepackage{tikz}
 \usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,positioning,fit}
 \usetikzlibrary{automata, positioning}
@@ -96,17 +97,17 @@
   \section{Implementation}
 
   Figure~\ref{fig:architecture} shows an overview of the architecture of our project, showing the main components.
-  \begin{figure}[ht]
+  \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{images/architecture.png}
+    \includegraphics[width=0.7\textwidth]{images/architecture.png}
     \caption{An overview of the main components in our system.}
     \label{fig:architecture}
   \end{figure}
 
   Shown in \autoref{fig:project-photo} a picture of the project components and how they are connected.
-  \begin{figure}[ht]
+  \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{images/project-all.png}
+    \includegraphics[width=0.7\textwidth]{images/project-all.png}
     \caption{A picture of the project components.}
     \label{fig:project-photo}
   \end{figure}
@@ -114,20 +115,29 @@
   \subsection{Sensors}
   To measure the air quality and pollutions levels we use two sensors that we connect directly to the Arduino board.
   \subsubsection{Air quality}
-  We measure the air quality by using a module that includes a MQ-135 gas sensor (see datasheet\footnote{https://www.olimex.com/Products/Components/Sensors/Gas/SNS-MQ135/resources/SNS-MQ135.pdf}), which is sensitive to several pollutants including $NH_3$, $NO_x$, alcohol, benzene, smoke and $CO_2$.
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/mq-135.jpg}
+    \caption{The MQ-135 gas sensor module}
+    \label{fig:air-quality-photo}
+  \end{figure}
+  We measure the air quality by using a module, depicted in~\autoref{fig:air-quality-photo}, that includes a MQ-135 gas sensor (see datasheet\footnote{https://www.olimex.com/Products/Components/Sensors/Gas/SNS-MQ135/resources/SNS-MQ135.pdf}), which is sensitive to several pollutants including $NH_3$, $NO_x$, alcohol, benzene, smoke and $CO_2$.
   Its output is an aggregated level of \textit{air quality}, either as an analog voltage or as a digital output based on a threshold. An higher value implies that the density of the detected gases is higher, and therefore the air quality is worse.
 
   This module requires a supply voltage of $5\ volts$, and we connect its analog output to an analog input pin (i.e. $A0$) of our Arduino Nano board.
-  %TODO: add photo
 
   \subsubsection{Particulate matter (PM2.5/PM10)}
-  Another sensor that we use to measure the pollution is the Nova Fitness SDS011 (see datasheet\footnote{https://cdn-reichelt.de/documents/datenblatt/X200/SDS011-DATASHEET.pdf}), which measures the density of particulate matter (i.e. PM2.5 and PM10) in the air. Its range of measured values is between $0$ and $999\mu g/m^3$.
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/pm-sensor.jpg}
+    \caption{The Nova Fitness SDS011 PM2.5/PM10 sensor}
+    \label{fig:pm-sensor-photo}
+  \end{figure}
+  Another sensor, shown in~\autoref{fig:pm-sensor-photo}, that we use to measure the pollution is the Nova Fitness SDS011 (see datasheet\footnote{https://cdn-reichelt.de/documents/datenblatt/X200/SDS011-DATASHEET.pdf}), which measures the density of particulate matter (i.e. PM2.5 and PM10) in the air. Its range of measured values is between $0$ and $999\mu g/m^3$.
 
   To output those values, the module has a serial interface based on the UART communication protocol, described in \autoref{tab:uart-protocol}, and the rate of transmission of the measurements is $1Hz$. We connected the output pin of this serial interface to the serial input pin of our Arduino Nano board. Furthermore, similarly to the air quality sensor, the module requires a supply voltage of $5\ volts$.
 
-  %TODO: add photo
-
-  \begin{table}[ht]
+  \begin{table}[H]
     \centering
     \begin{tabular}{r | l | l}
       \# & Name & Content\\\toprule
@@ -149,8 +159,8 @@
   In order to extract the correct values of bot PM2.5 and PM10 the following formula should be applied to the content of \autoref{tab:uart-protocol}:
 
   \begin{itemize}
-    \item PM2.5 value: PM2.5 ($\mu/gm^3$)  =  ((PM2.5  High  byte  *256)  +  PM2.5 low byte)/10
-    \item PM10 value: PM10 ($\mu/gm^3$)  =  ((PM10  high  byte*256)  +  PM10  low byte)/10
+    \item PM2.5 value: PM2.5 ($\mu g/m^3$)  =  ((PM2.5  High  byte  *256)  +  PM2.5 low byte)/10
+    \item PM10 value: PM10 ($\mu g/m^3$)  =  ((PM10  high  byte*256)  +  PM10  low byte)/10
     \item Checksum: Checksum=DATA1+DATA2+...+DATA6
   \end{itemize}
 
@@ -163,6 +173,14 @@
   Its source code is based on an example application, \verb|BluetoothLeGatt|, which is bundled with the official Android SDK, that allows to scan for Bluetooth Low Energy devices and connect to them. 
 
   What we added to that code was to, on every message received from the Arduino board, retrieve the location coordinates (using the Android FusedLocation API) and send that data together with the pollution information to a web server as a JSON object by performing a POST request. An example of such JSON object is shown in Figure~\ref{lst:json-packet}. On the other hand, the message sent from the board is structured as follows: \verb|123,12,5;|. It contains the measurements from the air quality sensor, as well as the two measured values from the PM2.5/10 sensor.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{images/android1.jpg}
+    \includegraphics[width=0.3\textwidth]{images/android2.jpg}
+    \caption{The two main views of the application: device list (left), device information (right)}
+    \label{fig:app-scan-list}
+  \end{figure}
 
   %TODO: add screenshots of app
 
