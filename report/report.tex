@@ -98,9 +98,17 @@
   Figure~\ref{fig:architecture} shows an overview of the architecture of our project, showing the main components.
   \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{images/architecture.png}
+    \includegraphics[width=0.75\textwidth]{images/architecture.png}
     \caption{An overview of the main components in our system.}
     \label{fig:architecture}
+  \end{figure}
+
+  Shown in \autoref{fig:project-photo} a picture of the project components and how they are connected.
+  \begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/project-all.png}
+    \caption{A picture of the project components.}
+    \label{fig:project-photo}
   \end{figure}
   \subsection{Arduino code}
   \subsection{Sensors}
@@ -113,7 +121,7 @@
   %TODO: add photo
 
   \subsubsection{Particulate matter (PM2.5/PM10)}
-  Another sensor that we use to measure the pollution is the Nova Fitness SDS011 (see datasheet\footnote{https://cdn-reichelt.de/documents/datenblatt/X200/SDS011-DATASHEET.pdf}), which measures the density of particulate matter (i.e. PM2.5 and PM10) in the air. Its range of measured values is between $0$ and $999\mu/gm^3$.
+  Another sensor that we use to measure the pollution is the Nova Fitness SDS011 (see datasheet\footnote{https://cdn-reichelt.de/documents/datenblatt/X200/SDS011-DATASHEET.pdf}), which measures the density of particulate matter (i.e. PM2.5 and PM10) in the air. Its range of measured values is between $0$ and $999\mu g/m^3$.
 
   To output those values, the module has a serial interface based on the UART communication protocol, described in \autoref{fig:uart-protocol}, and the rate of transmission of the measurements is $1Hz$. We connected the output pin of this serial interface to the serial input pin of our Arduino Nano board. Furthermore, similarly to the air quality sensor, the module requires a supply voltage of $5\ volts$.
 
