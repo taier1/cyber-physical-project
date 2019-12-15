@@ -110,7 +110,7 @@
     \caption{A picture of the project components.}
     \label{fig:project-photo}
   \end{figure}
-  \subsection{Arduino code}
+  
   \subsection{Sensors}
   To measure the air quality and pollutions levels we use two sensors that we connect directly to the Arduino board.
   \subsubsection{Air quality}
@@ -123,11 +123,11 @@
   \subsubsection{Particulate matter (PM2.5/PM10)}
   Another sensor that we use to measure the pollution is the Nova Fitness SDS011 (see datasheet\footnote{https://cdn-reichelt.de/documents/datenblatt/X200/SDS011-DATASHEET.pdf}), which measures the density of particulate matter (i.e. PM2.5 and PM10) in the air. Its range of measured values is between $0$ and $999\mu g/m^3$.
 
-  To output those values, the module has a serial interface based on the UART communication protocol, described in \autoref{fig:uart-protocol}, and the rate of transmission of the measurements is $1Hz$. We connected the output pin of this serial interface to the serial input pin of our Arduino Nano board. Furthermore, similarly to the air quality sensor, the module requires a supply voltage of $5\ volts$.
+  To output those values, the module has a serial interface based on the UART communication protocol, described in \autoref{tab:uart-protocol}, and the rate of transmission of the measurements is $1Hz$. We connected the output pin of this serial interface to the serial input pin of our Arduino Nano board. Furthermore, similarly to the air quality sensor, the module requires a supply voltage of $5\ volts$.
 
   %TODO: add photo
 
-  \begin{figure}[ht]
+  \begin{table}[ht]
     \centering
     \begin{tabular}{r | l | l}
       \# & Name & Content\\\toprule
@@ -143,8 +143,19 @@
       9 & Tail & AB\\
     \end{tabular}
     \caption{The bytes sent over the serial interface}
-    \label{fig:uart-protocol}
-  \end{figure}
+    \label{tab:uart-protocol}
+  \end{table}
+
+  In order to extract the correct values of bot PM2.5 and PM10 the following formula should be applied to the content of \autoref{tab:uart-protocol}:
+
+  \begin{itemize}
+    \item PM2.5 value: PM2.5 ($\mu/gm^3$)  =  ((PM2.5  High  byte  *256)  +  PM2.5 low byte)/10
+    \item PM10 value: PM10 ($\mu/gm^3$)  =  ((PM10  high  byte*256)  +  PM10  low byte)/10
+    \item Checksum: Checksum=DATA1+DATA2+...+DATA6
+  \end{itemize}
+
+  \subsection{Arduino code}
+
   \subsection{Android application}
   The goal of the Android application is to act as a \textit{gateway} between the Arduino board that collects pollution data from sensors and the web application that stores and visualizes the aggregated data. While forwarding pollution measurements, it also adds the current location coordinates obtained from the phone's GPS sensor.
 
