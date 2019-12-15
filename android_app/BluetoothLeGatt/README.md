@@ -48,3 +48,7 @@ https://github.com/android/connectivity
 
 Patches are encouraged, and may be submitted by forking this project and
 submitting a pull request through GitHub. Please see CONTRIBUTING.md for more details.
+
+Additions 
+-------
+Location API code adapted from: [https://medium.com/@ssaurel/getting-gps-location-on-android-with-fused-location-provider-api-1001eb549089](https://medium.com/@ssaurel/getting-gps-location-on-android-with-fused-location-provider-api-1001eb549089)
