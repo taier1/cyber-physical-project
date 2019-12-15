@@ -93,17 +93,18 @@
     \LARGE{\textbf{MindPollution}}
   \end{center}
   \section{Introduction}
-  Using bikes is an ecological way to move around cities. 
-  There is a trend in cities to provide bikers preferential lanes and even bike-sharing services that aim to improve the usage of this transport over other transports methods, such as cars and motorbikes, but also public transports such as buses. 
-  \emph{MindPollution} aims to collect and visualise pollution metrics inside cities by using small devices installed on all public bikes. Bikes will not only provides excellent coverage over the city due to the freedom with which the latter can move even in areas where other vehicles cannot, but it can supply data from multiple bicycles and users at the same time.
+  Bikes are an ecological way to move around cities. 
+  There is a trend in cities to provide bikers preferential lanes and even bike-sharing services that aim to raise the usage of this transport over other transports methods, such as cars, motorbikes, but also public transports such as buses. 
+  \emph{MindPollution} aims to collect and visualise pollution metrics inside cities by using small devices installed on public bikes. Bikes will not only provides excellent coverage over the city due to the freedom with which they can move in areas where other vehicles cannot, but they can also supply data from multiple bicycles and users at the same time.
 
   \subsection{Initial approach}
-  Our initial idea was to create a user-independent device that would have been installed on all public-bikes, and that would have required zero interactions with users. The devices would have stored the information about the pollution directly on their memory, for then transferring the data to the database service only when a user would have reached a recognised official location for bike drop-off. Due to a broken GPS sensor and no time to get a new one, we had to rethink our approach and application. In fact, to create a map of the city, we needed to have the position of the bike.
+  Our initial idea was to create a user-independent device that would have been installed on the public-bikes, and that would have required no interactions with the users. The devices would have stored the information about the pollution directly on their memory, they would have then transferred the data to the database service only when a user reached a recognised official location for bike drop-off. Due to a broken GPS sensor and lack of time to get a new one, we had to rethink our approach and application. In fact, to create a map of the city, we still needed to have the position of the bike somehow.
+
   \subsection{Selected approach}
-The broken GPS sensor implied the need to find new ways to get the position of the bike in the city. The first problem is that we couldn't rely on the bike since no requirements said that the public service would have provided this information to our application. The only way to have access to the position was to develop a mobile app that provided the user's locations and transmitting the pollution information from the device directly to the phone. Being now an user-dependant device, we have decided to use the phone application to directly transfer data to the server, abandoning the idea of having data transmission stations. In the end, we also developed a web-application that visualised the collected data.
+The broken GPS sensor implied the need to find new ways to get the position of the bike in the city. The first problem is that we couldn't rely on the bike since no requirements said that the public service would have provided this information to our application. The only way to have access to the position is to develop a mobile app that provides the user's locations and transmits the pollution information from the device directly to the phone. Now that the platform is user-dependant on regards of the device, we have decided to use the phone application to directly transfer data to the server, abandoning the idea of having data transmission stations. In the end, we also developed a web-application that visualises the collected data.
   \newpage
   \section{Implementation}
-  In order to satisfy the requirements of our project we decided to go with an hybrid architecture with both an arduino board and a smartphone. This architecture was the results of not being able to find a properly working GPS board in time for the project deadline. We think this architecture will prove to be easier to scale with a large number of boards connected to the web server and database.
+  In order to satisfy the requirements of our project we decided to go with an hybrid architecture with both an arduino board and a smartphone. This architecture is the results of not being able to find a properly working GPS board in time for the project deadline. We think this architecture will prove to be easier to scale with a large number of boards connected to the web server and database.
 
   Figure~\ref{fig:architecture} shows an overview of the architecture of our project, showing the main components.
   \begin{figure}[H]
@@ -198,7 +199,10 @@ The broken GPS sensor implied the need to find new ways to get the position of t
   The application runs on a mobile phone (in our demo a Huawei P10 lite running Android 8.0) that is connected via Bluetooth to the Arduino Nano 33 BLE board, as well as with an active GSM connection.
   Its source code is based on an example application, \verb|BluetoothLeGatt|\footnote{Also on Github: https://github.com/android/connectivity-samples/tree/master/BluetoothLeGatt}, which is bundled with the official Android SDK, that allows to scan for Bluetooth Low Energy devices and connect to them. 
 
-  What we added to that code was to, on every message received from the Arduino board, retrieve the location coordinates (code is adapted from a blog post\footnote{https://medium.com/@ssaurel/getting-gps-location-on-android-with-fused-location-provider-api-1001eb549089}) and send that data together with the pollution information to a web server as a JSON object by performing a POST request. An example of such JSON object is shown in Figure~\ref{lst:json-packet}. On the other hand, the message sent from the board is structured as follows: \verb|123,12,5;|. It contains the measurements from the air quality sensor, as well as the two measured values from the PM2.5/10 sensor.
+  What we added to that code was to, on every message received from the Arduino board, retrieve the location coordinates (code is adapted from a blog post\footnote{https://medium.com/@ssaurel/getting-gps-location-on-android-with-fused-location-provider-api-1001eb549089}) and send that data together with the pollution information to a web server as a JSON object by performing a POST request. 
+  
+  An example of such JSON object is shown in Figure~\ref{lst:json-packet}. On the other hand, the message sent from the board is structured as follows: \verb|123,12,5;|. It contains the measurements from the air quality sensor, as well as the two measured values from the PM2.5/10 sensor.
+
   \begin{figure}[H]
     \centering
     \begin{verbatim}{
