@@ -199,6 +199,21 @@ The broken GPS sensor implied the need to find new ways to get the position of t
   Its source code is based on an example application, \verb|BluetoothLeGatt|\footnote{Also on Github: https://github.com/android/connectivity-samples/tree/master/BluetoothLeGatt}, which is bundled with the official Android SDK, that allows to scan for Bluetooth Low Energy devices and connect to them. 
 
   What we added to that code was to, on every message received from the Arduino board, retrieve the location coordinates (code is adapted from a blog post\footnote{https://medium.com/@ssaurel/getting-gps-location-on-android-with-fused-location-provider-api-1001eb549089}) and send that data together with the pollution information to a web server as a JSON object by performing a POST request. An example of such JSON object is shown in Figure~\ref{lst:json-packet}. On the other hand, the message sent from the board is structured as follows: \verb|123,12,5;|. It contains the measurements from the air quality sensor, as well as the two measured values from the PM2.5/10 sensor.
+  \begin{figure}[H]
+    \centering
+    \begin{verbatim}{
+  "createdAt": "2019-12-13T09:22:49.824Z",
+  "lat": 46.0037,
+  "long": 8.9511 ,
+  "bikeId" : "00002add-0000-1000-8000-00805f9b34fb",
+  "pm10": 5,
+  "pm25": 12,
+  "airQuality": 123
+}\end{verbatim}
+  \caption{An example JSON object containing the pollution measurements and location}\label{lst:json-packet}
+  \end{figure}
+  The application user interface, shown in~\autoref{fig:app-scan-list}, is comprised of two main views: the device list and the device information.
+  The first view allows the user to scan for nearby Bluetooth Low-energy devices and shows them as a list. We modified the existing code to only visualize devices with the name \verb|AIR_QUALITY|, so that, for demonstration purposes, only our Arduino board would be shown.
 
   \begin{figure}[H]
     \centering
@@ -208,23 +223,8 @@ The broken GPS sensor implied the need to find new ways to get the position of t
     \label{fig:app-scan-list}
   \end{figure}
 
-  %TODO: add screenshots of app
-
-  \begin{figure}[h]
-    \centering
-    \begin{verbatim}
-{
-  "createdAt": "2019-12-13T09:22:49.824Z",
-  "lat": 46.0037,
-  "long": 8.9511 ,
-  "bikeId" : "00002add-0000-1000-8000-00805f9b34fb",
-  "pm10": 5,
-  "pm25": 12,
-  "airQuality": 123
-}
-    \end{verbatim}
-  \caption{An example JSON object containing the pollution measurements and location}\label{lst:json-packet}
-  \end{figure}
+  When selecting a device, the other view is shown, visualizing more information related to that device and allowing the user to connect to it. The information shown includes the device address, the connection status, the last packet of data received as well as a list of the BLE services and characteristics that the device advertises. By tapping on a characteristic (in our case: \textit{``Pollution characteristic''}), notifications for it are enabled. The application will then listen for the data received from the connected device, process it and forward it to the remote server, as described previously.
+  This view was already present in the example code, and what we added was the code for listening to and processing the data notifications from the Arduino board.
 
   \subsection{Web application}
   \newpage
