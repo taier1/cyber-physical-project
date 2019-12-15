@@ -60,8 +60,8 @@ let addMarker = function(data, current, color) {
             fillOpacity: 0.1,
             weight:0
         }).addTo(map).bindPopup("Air Quality: " + data["airQuality"] + "<br>" +
-            "PM 10: " + Number(data["pm10"]).toFixed(2) + "<br>" +
-            "PM 25: " + Number(data["pm25"]).toFixed(2) );
+            "PM 10: " + Number(data["pm10"]) + "<br>" +
+            "PM 25: " + Number(data["pm25"]));
         previousMarker.push(pMarker);
     }
 };
@@ -98,15 +98,15 @@ let updateAverage = function(){
     let totalPM25 = 0;
     for (let key in dataMap) {
         totalAirQuality += dataMap[key]['airQuality'];
-        totalPM10 += dataMap[key]['pm10'];
-        totalPM25 += dataMap[key]['pm25'];
+        totalPM10 += Number(dataMap[key]['pm10']);
+        totalPM25 += Number(dataMap[key]['pm25']);
     }
 
-    $('#tfoot').replaceWith('<tfoot id="tfoot" style="position: sticky; bottom: 0; display: block;" class="bg-light">' +
+    $('#tfoot').replaceWith('<tfoot id="tfoot" class="bg-light">' +
         '<tr><th>Average</th>' +
-        '<th>'+ (totalAirQuality / Object.keys(dataMap).length).toFixed(4) +'</th>' +
-        '<th>'+ (totalPM10 / Object.keys(dataMap).length).toFixed(4) +'</th>' +
-        '<th>'+ (totalPM25 / Object.keys(dataMap).length).toFixed(4) +'</th></tr>' +
+        '<th>'+ (totalAirQuality / Object.keys(dataMap).length).toFixed(2) +'</th>' +
+        '<th>'+ (totalPM10 / Object.keys(dataMap).length).toFixed(2) +'</th>' +
+        '<th>'+ (totalPM25 / Object.keys(dataMap).length).toFixed(2) +'</th></tr>' +
         '</tfoot>')
 };
 
@@ -114,17 +114,17 @@ let updateAverage = function(){
 let updateTableRow = function (bikeObj) {
     if ($('#tbody').children().length === 0 || document.getElementById('row' + bikeObj["bikeId"]) === null) {
         $('#tbody').append('<tr id="row' + bikeObj["bikeId"] + '">' +
-            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +' scope="row">' + bikeObj["bikeId"] + '</th>' +
-            '<td>' + Number(bikeObj["airQuality"]).toFixed(2) + '</td>' +
-            '<td>' + Number(["pm10"]).toFixed(2) + '</td>' +
-            '<td>' + Number(["pm25"]).toFixed(2) + '</td>' +
+            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +' scope="row">' + bikeObj["bikeId"].slice(0, 5) + '...</th>' +
+            '<td>' + Number(bikeObj["airQuality"]) + '</td>' +
+            '<td>' + Number(bikeObj["pm10"]) + '</td>' +
+            '<td>' + Number(bikeObj["pm25"]) + '</td>' +
             '</tr>')
     } else {
         $('#row' + bikeObj["bikeId"]).replaceWith('<tr id="row' + bikeObj["bikeId"] + '">' +
-            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +' scope="row">' + bikeObj["bikeId"] + '</th>' +
-            '<td>' + Number(["airQuality"]).toFixed(2) + '</td>' +
-            '<td>' + Number(["pm10"]).toFixed(2) + '</td>' +
-            '<td>' + Number(["pm25"]).toFixed(2) + '</td>' +
+            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +' scope="row">' + bikeObj["bikeId"].slice(0, 5) + '</th>' +
+            '<td>' + Number(bikeObj["airQuality"]) + '</td>' +
+            '<td>' + Number(bikeObj["pm10"]) + '</td>' +
+            '<td>' + Number(bikeObj["pm25"]) + '</td>' +
             '</tr>'
         )
     }
@@ -180,22 +180,22 @@ let addPreviousPositionsToMap = function () {
                 for (var i = 0; i < data.length; i++) {
                     let color = 'red';
                     switch (true) {
-                        case (data[i]['pm25'] <= 50):
+                        case (data[i]['pm25'] <= 12):
                             color = 'green';
                             break;
-                        case (data[i]['pm25'] <= 100):
+                        case (data[i]['pm25'] <= 36):
                             color = 'yellow';
                             break;
-                        case (data[i]['pm25'] <= 150):
+                        case (data[i]['pm25'] <= 56):
                             color = 'orange';
                             break;
-                        case (data[i]['pm25'] <= 200):
+                        case (data[i]['pm25'] <= 151):
                             color = 'red';
                             break;
-                        case (data[i]['pm25'] <= 300):
+                        case (data[i]['pm25'] <= 251):
                             color = 'purple';
                             break;
-                        case (data[i]['pm25'] > 300):
+                        case (data[i]['pm25'] > 251):
                         color = 'bordeaux';
                         break;
                     }
