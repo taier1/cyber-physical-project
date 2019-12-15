@@ -92,6 +92,15 @@
     \LARGE{\textbf{Citybike Pollution Data Collection}}
   \end{center}
   \section{Introduction}
+  Using bikes is an ecological way to move around cities. 
+  There is a trend in cities to provide bikers preferential lanes and even bike-sharing services that aim to improve the usage of this transport over other transports methods, such as cars and motorbikes, but also public transports such as buses. 
+  Bike users are not only the ones that generate less CO2 but also the ones that, together with pedestrians, suffer more from the effect of the pollution caused by other vehicles.
+  \emph{MindPollution} aims to collect and visualise pollution metrics inside cities by using small devices installed on all public bikes. Bikes will not only provides excellent coverage over the city due to the freedom with which the latter can move even in areas where other vehicles cannot, but it can supply data from multiple bicycles and users at the same time.
+
+  \subsection{Initial approach}
+  Our initial idea was to create a user-independent device that would have been installed on all public-bikes and that would have required zero interactions with users. The devices would have stored the information about the pollution directly on its memory. Data would have been then transferred to the database service only when a user would have reached a recognised official location for bike drop-off. Due to a broken GPS sensor and no time to get a new one, we had to rethink our approach and application. In fact, to create a map of the city, we needed to have the position of the bike in the city.
+  \subsection{Selected approach}
+  The broken GPS sensor implied the need to find new ways to get the position of the bike in the city. The first problem is that we couldn't rely on the bike since no requirements said that the service provider could have provided to our application this information. This problem automatically created a situation in which we should have become dependent on users to have access to the location. The only way to have access to the position was to develop a mobile application that provided the user's locations. Being now an user-dependant device, we have decided to use the phone application to directly transmit data to the server, abandoning the idea of having data transmission stations. At the end, we also decided to develop a web-application that visualised the collected data.
   \newpage
   \section{Architecture}
 
