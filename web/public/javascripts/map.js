@@ -60,8 +60,8 @@ let addMarker = function(data, current, color) {
             fillOpacity: 0.1,
             weight:0
         }).addTo(map).bindPopup("Air Quality: " + data["airQuality"] + "<br>" +
-            "PM 10: " + data["pm10"].toFixed(4) + "<br>" +
-            "PM 25: " + data["pm25"].toFixed(4) );
+            "PM 10: " + Number(data["pm10"]).toFixed(2) + "<br>" +
+            "PM 25: " + Number(data["pm25"]).toFixed(2) );
         previousMarker.push(pMarker);
     }
 };
@@ -115,16 +115,16 @@ let updateTableRow = function (bikeObj) {
     if ($('#tbody').children().length === 0 || document.getElementById('row' + bikeObj["bikeId"]) === null) {
         $('#tbody').append('<tr id="row' + bikeObj["bikeId"] + '">' +
             '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +' scope="row">' + bikeObj["bikeId"] + '</th>' +
-            '<td>' + bikeObj["airQuality"].toFixed(4) + '</td>' +
-            '<td>' + bikeObj["pm10"].toFixed(4) + '</td>' +
-            '<td>' + bikeObj["pm25"].toFixed(4) + '</td>' +
+            '<td>' + Number(bikeObj["airQuality"]).toFixed(2) + '</td>' +
+            '<td>' + Number(["pm10"]).toFixed(2) + '</td>' +
+            '<td>' + Number(["pm25"]).toFixed(2) + '</td>' +
             '</tr>')
     } else {
         $('#row' + bikeObj["bikeId"]).replaceWith('<tr id="row' + bikeObj["bikeId"] + '">' +
             '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +' scope="row">' + bikeObj["bikeId"] + '</th>' +
-            '<td>' + bikeObj["airQuality"].toFixed(4) + '</td>' +
-            '<td>' + bikeObj["pm10"].toFixed(4) + '</td>' +
-            '<td>' + bikeObj["pm25"].toFixed(4) + '</td>' +
+            '<td>' + Number(["airQuality"]).toFixed(2) + '</td>' +
+            '<td>' + Number(["pm10"]).toFixed(2) + '</td>' +
+            '<td>' + Number(["pm25"]).toFixed(2) + '</td>' +
             '</tr>'
         )
     }
@@ -180,15 +180,24 @@ let addPreviousPositionsToMap = function () {
                 for (var i = 0; i < data.length; i++) {
                     let color = 'red';
                     switch (true) {
-                        case (data[i]['airQuality'] <= 0.1):
+                        case (data[i]['airQuality'] <= 50):
                             color = 'green';
                             break;
-                        case (data[i]['airQuality'] <= 0.3):
+                        case (data[i]['airQuality'] <= 100):
                             color = 'yellow';
                             break;
-                        case (data[i]['airQuality'] > 0.3):
+                        case (data[i]['airQuality'] <= 150):
+                            color = 'orange';
+                            break;
+                        case (data[i]['airQuality'] <= 200):
                             color = 'red';
                             break;
+                        case (data[i]['airQuality'] <= 300):
+                            color = 'purple';
+                            break;
+                        case (data[i]['airQuality'] > 300):
+                        color = 'bordeaux';
+                        break;
                     }
                     addMarker(data[i], false, color)
                 }
