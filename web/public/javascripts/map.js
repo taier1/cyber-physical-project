@@ -60,16 +60,11 @@ let addMarker = function(data, current, color) {
             fillOpacity: 0.1,
             weight:0
         }).addTo(map).bindPopup("Air Quality: " + data["airQuality"] + "<br>" +
-            "PM 10: " + data["pm10"] + "<br>" +
-            "PM 25: " + data["pm25"] );
+            "PM 10: " + data["pm10"].toFixed(4) + "<br>" +
+            "PM 25: " + data["pm25"].toFixed(4) );
         previousMarker.push(pMarker);
     }
 };
-
-
-$("a").click(function () {
-    markerFunction($(this)[0].id);
-});
 
 let fetchCurrentPositions = function (next) {
     $.ajax({
@@ -107,29 +102,29 @@ let updateAverage = function(){
         totalPM25 += dataMap[key]['pm25'];
     }
 
-    $('#tfoot').replaceWith('<tfoot id="tfoot">' +
+    $('#tfoot').replaceWith('<tfoot id="tfoot" style="position: sticky; bottom: 0; display: block;" class="bg-light">' +
         '<tr><th>Average</th>' +
-        '<th>'+totalAirQuality / Object.keys(dataMap).length+'</th>' +
-        '<th>'+totalPM10 / Object.keys(dataMap).length+'</th>' +
-        '<th>'+totalPM25 / Object.keys(dataMap).length+'</th></tr>' +
+        '<th>'+ (totalAirQuality / Object.keys(dataMap).length).toFixed(4) +'</th>' +
+        '<th>'+ (totalPM10 / Object.keys(dataMap).length).toFixed(4) +'</th>' +
+        '<th>'+ (totalPM25 / Object.keys(dataMap).length).toFixed(4) +'</th></tr>' +
         '</tfoot>')
-}
+};
 
 
 let updateTableRow = function (bikeObj) {
     if ($('#tbody').children().length === 0 || document.getElementById('row' + bikeObj["bikeId"]) === null) {
         $('#tbody').append('<tr id="row' + bikeObj["bikeId"] + '">' +
-            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +'">' + bikeObj["bikeId"] + '</th>' +
-            '<td>' + bikeObj["airQuality"] + '</td>' +
-            '<td>' + bikeObj["pm10"] + '</td>' +
-            '<td>' + bikeObj["pm25"] + '</td>' +
+            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +' scope="row">' + bikeObj["bikeId"] + '</th>' +
+            '<td>' + bikeObj["airQuality"].toFixed(4) + '</td>' +
+            '<td>' + bikeObj["pm10"].toFixed(4) + '</td>' +
+            '<td>' + bikeObj["pm25"].toFixed(4) + '</td>' +
             '</tr>')
     } else {
         $('#row' + bikeObj["bikeId"]).replaceWith('<tr id="row' + bikeObj["bikeId"] + '">' +
-            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +'">' + bikeObj["bikeId"] + '</th>' +
-            '<td>' + bikeObj["airQuality"] + '</td>' +
-            '<td>' + bikeObj["pm10"] + '</td>' +
-            '<td>' + bikeObj["pm25"] + '</td>' +
+            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +' scope="row">' + bikeObj["bikeId"] + '</th>' +
+            '<td>' + bikeObj["airQuality"].toFixed(4) + '</td>' +
+            '<td>' + bikeObj["pm10"].toFixed(4) + '</td>' +
+            '<td>' + bikeObj["pm25"].toFixed(4) + '</td>' +
             '</tr>'
         )
     }
@@ -151,8 +146,7 @@ let updateMap = function (data, i) {
 
 let addCurrentPositionsToMap = function () {
     fetchCurrentPositions(function (data) {
-        if (currentCount !== data.length)
-            currentMarker.forEach(marker => map.removeLayer(marker));
+        currentMarker.forEach(marker => map.removeLayer(marker));
 
         for (var i = 0; i < data.length; i++) {
             if (data[i]['bikeId'] in dataMap) {
@@ -170,10 +164,9 @@ let addCurrentPositionsToMap = function () {
             }
         }
 
-        if (currentCount !== data.length) {
-            currentMarker.forEach(marker => marker.addTo(map));
-            currentCount = data.length;
-        }
+        currentMarker.forEach(marker => marker.addTo(map));
+        currentCount = data.length;
+
     })
 };
 
@@ -210,13 +203,14 @@ let timeout = function () {
         addPreviousPositionsToMap();
         timeout()
     }, 5000);
-}
+};
+
 
 let handleBikeTableClick = function(document){
     $(document).on('click',".bikeId",function (e) {
         console.log($(e.target).attr('data-id'));
     });
-}
+};
 
 $(document).ready(function () {
     addPreviousPositionsToMap();
@@ -225,4 +219,4 @@ $(document).ready(function () {
     timeout();
 
     handleBikeTableClick(document)
-})
+});
