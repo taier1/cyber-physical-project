@@ -180,22 +180,22 @@ let addPreviousPositionsToMap = function () {
                 for (var i = 0; i < data.length; i++) {
                     let color = 'red';
                     switch (true) {
-                        case (data[i]['airQuality'] <= 50):
+                        case (data[i]['pm25'] <= 50):
                             color = 'green';
                             break;
-                        case (data[i]['airQuality'] <= 100):
+                        case (data[i]['pm25'] <= 100):
                             color = 'yellow';
                             break;
-                        case (data[i]['airQuality'] <= 150):
+                        case (data[i]['pm25'] <= 150):
                             color = 'orange';
                             break;
-                        case (data[i]['airQuality'] <= 200):
+                        case (data[i]['pm25'] <= 200):
                             color = 'red';
                             break;
-                        case (data[i]['airQuality'] <= 300):
+                        case (data[i]['pm25'] <= 300):
                             color = 'purple';
                             break;
-                        case (data[i]['airQuality'] > 300):
+                        case (data[i]['pm25'] > 300):
                         color = 'bordeaux';
                         break;
                     }
