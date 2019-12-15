@@ -230,8 +230,37 @@ The broken GPS sensor implied the need to find new ways to get the position of t
   When selecting a device, the other view is shown, visualizing more information related to that device and allowing the user to connect to it. The information shown includes the device address, the connection status, the last packet of data received as well as a list of the BLE services and characteristics that the device advertises. By tapping on a characteristic (in our case: \textit{``Pollution characteristic''}), notifications for it are enabled. The application will then listen for the data received from the connected device, process it and forward it to the remote server, as described previously.
   This view was already present in the example code, and what we added was the code for listening to and processing the data notifications from the Arduino board.
 
-  \subsection{Web application}
-  The goal of the web application is to visualise the data collected from the devices. The frontend uses Leflet 
+  \subsection{Web application \& Server}
+  The goal of the web application is to visualise the data collected from the various devices. It has two main components, the Server that provides access to the data and the frontend, that visualise the data in a comprehensible way.
+  
+  \paragraph{Backend} The backend is made with NodeJS, while the database is MongoDB. The backend provides and API from which clients can access the data for then visualising them. \\
+  The API has 3 endpoints that are:
+  \begin{itemize}
+  	\item \emph{POST: /api/update} is used to insert new data into the database.
+  	\item \emph{GET: /api/getCurrentPositions} is used to fetch data about the actual position and actual pollution values of the bikes. 
+  	\item \emph{GET: /api/getPreviousPositions} is really similar to the previous endpoint, except that the data that is retrieved is historical.
+  \end{itemize}
+  
+  \paragraph{Frontend}
+  The frontend is still served statically by the backend. When opened, the main components are a large map that displays the position of the bikes and the historical pollution values, while on the right there is a table  of the latest values of the different bikes.  
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/web.png}
+    \caption{The homepage of our web-application}
+    \label{fig:homepage}
+  \end{figure}
+
+Regarding the table on the right, the color of the row  will change when there is an update in the values for that specific bike. On the map, the dots display the historical values for PM.
+As an example, the colours for pm25 mean the following:
+\begin{itemize}
+	\item Green: good
+	\item Yellow: moderate
+	\item Orange: unhealthy for sensitive groups
+	\item Red:  unhealthy
+	\item Purple: very unhealthy
+	\item Bordeaux: hazardous
+\end{itemize}
+  
   \newpage
   \section{Conclusions}
   The idea of using public bikes services to collect pollution data has been proven to be useful, especially since this service is widely used in cities. The device responsible for collecting data can be easily extended by using other sensors in addition to the ones that have been selected for this project, also providing different types of information from the current ones. Regarding the visualisation, it can provide detailed information about the quality of the air, giving insights about the areas that are more polluted. Regarding future work, sensors still have a significant impact on battery consumption, creating the need for improving the sampling of the data to save energy.  Right now, due to the missing GPS sensor, the tool is user-dependent. This can lead to problems since to collect data; users will need to download an application. This can be resolved by inserting the GPS in the device and by implementing the approach explained in Section 1.1.   
