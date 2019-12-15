@@ -9,7 +9,7 @@ const collectionName = "data";
 const options = {
   useUnifiedTopology: true,
   useNewUrlParser: true
-}
+};
 
 router.post('/update', function (req,res,next) {
 
@@ -24,7 +24,7 @@ router.post('/update', function (req,res,next) {
       db.close()
     });
   })
-})
+});
 
 router.get('/getCurrentPositions', function (req,res,next) {
   MongoClient.connect(url, options, function (err, db) {
@@ -45,7 +45,7 @@ router.get('/getCurrentPositions', function (req,res,next) {
       }
     })
   });
-})
+});
 
 router.get('/getPreviousPositions', function (req,res,next) {
   MongoClient.connect(url, options, function (err, db) {
@@ -58,5 +58,17 @@ router.get('/getPreviousPositions', function (req,res,next) {
     });
   });
 });
+
+// router.get('/getPreviousPositions', function (req,res,next) {
+//   MongoClient.connect(url, options, function (err, db) {
+//     if (err) throw err;
+//     var dbo = db.db(dbName);
+//     dbo.collection(collectionName).find().sort({createdAt:-1}).toArray(function (err, result) {
+//       let cleanResult = result.slice(1);
+//       res.json(cleanResult)
+//       db.close()
+//     });
+//   });
+// });
 
 module.exports = router;
