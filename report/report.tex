@@ -113,7 +113,7 @@ The broken GPS sensor implied the need to find new ways to get the position of t
     \label{fig:architecture}
   \end{figure}
 
-  Shown in \autoref{fig:project-photo} a picture of the project components and how they are connected.
+  Shown in \autoref{fig:project-photo} is a picture of the project components wired to the Arduino Nano board and how they are physically connected. These components are all powered by a battery pack (providing $6\ volts$) connected to a voltage regulator that decreases the voltage to $5\ volts$. While Arduino supports different power supply voltages, the two sensors that we used require that particular value.
   \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{images/project-all.png}
@@ -176,7 +176,7 @@ The broken GPS sensor implied the need to find new ways to get the position of t
   \subsection{Arduino code}
   The Arduino code is quite easy to understand, it is divided into three main parts: Global variables, setup and main loop:
 
-  \subsubsection{Global variable}
+  \subsubsection{Global variables}
   We need this first part of the code to declare the global variables for the RGB light, the Bluetooth and the sensors. In particular we save the pins of the integrated RGB light on the Arduino Nano BLE board.
 
   We then create a buffer for the data we want to send on the Bluetooth as well as the Bluetooth service and characteristic. We defined the maximum length of the buffer sent via Bluetooth as 20 bytes long, that is the threshold we found was perfectly working for the transfer and it was big enough to hold all the data we needed to send in one transmission.
@@ -186,7 +186,7 @@ The broken GPS sensor implied the need to find new ways to get the position of t
   As the name suggest this is the code setting up all we need for the project. First the serial port transmission, then the Bluetooth service to which we assign a specific name and then we start advertising.
 
   \subsubsection{loop()}
-  This is the main part of the program that is also divided in two main branch. We the device is connected the RGB light turns green and the program reed from the small dust particle serial the data that is coming. There is a specific protocol (\autoref{tab:uart-protocol}) that we need to decode in order to exctract the data, when one correct reading is completed the code take a read also on the air quality sensor and send the data via Bluetooth to the connected smartphone application. The data is sent with a specific sequence that is: \verb|<PM10>,<PM2.5>,<AIR_QUALITY>;|.
+  This is the main part of the program that is also divided in two main branch. The device is connected to the RGB light turns green and the program reed from the small dust particle serial the data that is coming. There is a specific protocol (see~\autoref{tab:uart-protocol}) that we need to decode in order to extract the data. When one correct reading is completed the code takes a reading also on the air quality sensor and sends the data via Bluetooth to the connected smartphone application. The data is sent with a specific sequence as follows: \verb|<PM10>,<PM2.5>,<AIR_QUALITY>;|.
 
   If the device is not connected instead, a blinking blue light will start and the Arduino boards will start advertising again until a device get connected to it.
     
