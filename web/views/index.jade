@@ -2,79 +2,31 @@ extends layout
 
 block content
 
-  .container-fluid(style="padding-top:70px;")
-    .row
-      .col-9
-        .mapbox
-          #map.dvContainer(style='min-width:100%;height: 600px;')
-      .col-3(style="height: 600px;")
-        table.table.bg-light
-          thead.bg-light
-            tr
-              th(scope='col') Bike ID
-              th(scope='col') Air Quality
-              th(scope='col') PM10
-              th(scope='col') PM2.5
-          tbody#tbody
-          tfoot#tfoot.bg-light
-            tr
-              th(scope='row') Average
-              th 0.0
-              th 0.0
-              th 0.0
-    //tab-content#nav-tabContent
-    //  #nav-air.tab-pane.fade.show.active(role='tabpanel', aria-labelledby='nav-air-tab', style="height: 700px;")
-    //    .row(style="position: relative; top: 50%; transform: translateY(-50%);")
-    //      .col-9
-    //        .mapbox
-    //          #map.dvContainer(style="height: 600px")
-    //      .col-3(style="height: 600px;")
-    //          table.table.bg-light(style="max-height: 600px; display: block; overflow-y: scroll;")
-    //            thead.bg-light(style="position: sticky; top: 0; display: block;")
-    //              tr
-    //                th(scope='col') Bike ID
-    //                th(scope='col') Air Quality
-    //                th(scope='col') PM10
-    //                th(scope='col') PM2.5
-    //            tbody#tbody
-    //            tfoot#tfoot.bg-light(style="position: sticky; bottom: 0; display: block;")
-    //              tr
-    //                th(scope='row') Average
-    //                th 0.0
-    //                th 0.0
-    //                th 0.0
-    //
-    //
+    .container-fluid(style="padding-top:70px;")
+        .row
+            .col-9
+                .col-12
+                  .mapbox
+                      #map.dvContainer(style='min-width:100%;height: 600px;')
+                .col-12
+                  .right#legend
+
+            .col-3(style="height: 600px;")
+                table.table.bg-light
+                    thead.bg-light
+                        tr
+                            th(scope='col') Bike ID
+                            th(scope='col') Air Quality
+                            th(scope='col') PM10
+                            th(scope='col') PM2.5
+                    tbody#tbody
+                    tfoot#tfoot.bg-light
+                        tr
+                            th(scope='row') Average
+                            th 0.0
+                            th 0.0
+                            th 0.0
 
 
-
-
-
-  script(src='javascripts/map.js')
-
-  //.container-fluid
-  //  .mapbox
-  //    #map.dvContainer(style='min-width:100%;height: 600px;')
-//
-//
-//
-//  .container
-//    div(class="table__wrapper")
-//      table.table
-//        thead
-//          tr
-//
-//            th Bike ID
-//            th Air Quality
-//
-//            th PM10
-//            th PM2.5
-//        tfoot#tfoot
-//          tr
-//            th Average
-//            th 0.0
-//            th 0.0
-//            th 0.0
-//
-//        tbody#tbody
+    script(src='javascripts/map.js')
 

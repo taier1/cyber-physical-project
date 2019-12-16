@@ -22,21 +22,21 @@ let currentCount = -1;
 
 let markerMap = {}
 
-let hilightRow = function(bikeId){
-    if(higlightedrow == null) {
+let hilightRow = function (bikeId) {
+    if (higlightedrow == null) {
         $('#row' + bikeId).css('background-color', 'yellow');
-    }else if(higlightedrow === '#row' + bikeId){
+    } else if (higlightedrow === '#row' + bikeId) {
         $(higlightedrow).css('background-color', '');
         higlightedrow = null;
         return;
-    }else{
+    } else {
         $(higlightedrow).css('background-color', '');
         $('#row' + bikeId).css('background-color', 'yellow');
     }
-    higlightedrow= '#row' + bikeId;
+    higlightedrow = '#row' + bikeId;
 };
 
-let addMarker = function(data, current, color) {
+let addMarker = function (data, current, color) {
     let long = data['long'];
     let lat = data['lat'];
     let bikeId = data['bikeId'];
@@ -45,23 +45,23 @@ let addMarker = function(data, current, color) {
     if (current) {
         let bikeIcon = L.icon({
             iconUrl: '../images/bike.png',
-            iconSize:     [map.getZoom()*1.5, map.getZoom()*1.5], // size of the icon
-            iconAnchor:   [23, 0], // point of the icon which will correspond to marker's location
-            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+            iconSize: [map.getZoom() * 1.5, map.getZoom() * 1.5], // size of the icon
+            iconAnchor: [23, 0], // point of the icon which will correspond to marker's location
+            popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
 
 
         marker1 = L.marker([lat, long], {icon: bikeIcon}, {title: bikeId});
         currentMarker.push(marker1);
 
-        marker1.addTo(map).on('click', function(e) {
+        marker1.addTo(map).on('click', function (e) {
             hilightRow(bikeId)
         });
 
-        if(bikeId in markerMap){
+        if (bikeId in markerMap) {
             map.removeLayer(markerMap[bikeId]);
             markerMap[bikeId] = marker1
-        }else{
+        } else {
             markerMap[bikeId] = marker1
         }
     } else {
@@ -69,7 +69,7 @@ let addMarker = function(data, current, color) {
             color: color,
             fillColor: color,
             fillOpacity: 0.1,
-            weight:0
+            weight: 0
         }).addTo(map).bindPopup("Air Quality: " + data["airQuality"] + "<br>" +
             "PM 10: " + Number(data["pm10"]) + "<br>" +
             "PM 25: " + Number(data["pm25"]));
@@ -103,7 +103,7 @@ let updateBikeMarker = function (data, position) {
     addMarker(data, true);
 };
 
-let updateAverage = function(){
+let updateAverage = function () {
     let totalAirQuality = 0;
     let totalPM10 = 0;
     let totalPM25 = 0;
@@ -115,9 +115,9 @@ let updateAverage = function(){
 
     $('#tfoot').replaceWith('<tfoot id="tfoot" class="bg-light">' +
         '<tr><th>Average</th>' +
-        '<th>'+ (totalAirQuality / Object.keys(dataMap).length).toFixed(2) +'</th>' +
-        '<th>'+ (totalPM10 / Object.keys(dataMap).length).toFixed(2) +'</th>' +
-        '<th>'+ (totalPM25 / Object.keys(dataMap).length).toFixed(2) +'</th></tr>' +
+        '<th>' + (totalAirQuality / Object.keys(dataMap).length).toFixed(2) + '</th>' +
+        '<th>' + (totalPM10 / Object.keys(dataMap).length).toFixed(2) + '</th>' +
+        '<th>' + (totalPM25 / Object.keys(dataMap).length).toFixed(2) + '</th></tr>' +
         '</tfoot>')
 };
 
@@ -125,14 +125,14 @@ let updateAverage = function(){
 let updateTableRow = function (bikeObj) {
     if ($('#tbody').children().length === 0 || document.getElementById('row' + bikeObj["bikeId"]) === null) {
         $('#tbody').append('<tr id="row' + bikeObj["bikeId"] + '">' +
-            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +' scope="row">' + bikeObj["bikeId"].slice(0, 5) + '...</th>' +
+            '<th class="bikeId" data-id="' + bikeObj["bikeId"] + ' scope="row">' + bikeObj["bikeId"].slice(0, 5) + '...</th>' +
             '<td>' + Number(bikeObj["airQuality"]) + '</td>' +
             '<td>' + Number(bikeObj["pm10"]) + '</td>' +
             '<td>' + Number(bikeObj["pm25"]) + '</td>' +
             '</tr>')
     } else {
         $('#row' + bikeObj["bikeId"]).replaceWith('<tr id="row' + bikeObj["bikeId"] + '">' +
-            '<th class="bikeId" data-id="'+ bikeObj["bikeId"] +' scope="row">' + bikeObj["bikeId"].slice(0, 5) + '</th>' +
+            '<th class="bikeId" data-id="' + bikeObj["bikeId"] + ' scope="row">' + bikeObj["bikeId"].slice(0, 5) + '</th>' +
             '<td>' + Number(bikeObj["airQuality"]) + '</td>' +
             '<td>' + Number(bikeObj["pm10"]) + '</td>' +
             '<td>' + Number(bikeObj["pm25"]) + '</td>' +
@@ -204,8 +204,8 @@ let addPreviousPositionsToMap = function () {
                             color = 'purple';
                             break;
                         case (data[i]['pm25'] > 251):
-                        color = 'bordeaux';
-                        break;
+                            color = 'bordeaux';
+                            break;
                     }
                     addMarker(data[i], false, color)
                 }
@@ -223,16 +223,42 @@ let timeout = function () {
 };
 
 
-let handleBikeTableClick = function(document){
-    $(document).on('click',".bikeId",function (e) {
+let handleBikeTableClick = function (document) {
+    $(document).on('click', ".bikeId", function (e) {
         console.log($(e.target).attr('data-id'));
     });
 };
 
+let mapLegend = {
+    'pm25': {
+        'good': 'green',
+        'moderate': 'yellow',
+        'unhealthy for sensitive groups': 'orange',
+        'unhealthy': 'red',
+        'very unhealthy': 'purple'
+    },
+    'pm10': {
+        'good': 'green',
+        'moderate': 'yellow',
+        'unhealthy for sensitive groups': 'orange',
+        'unhealthy': 'red',
+        'very unhealthy': 'purple'
+    }
+}
+
+let legendSetup = function () {
+    dictionary = mapLegend['pm25'];
+    Object.keys(dictionary).forEach(function(key) {
+        $('#legend').append('<div style="display: -webkit-inline-box;"> '+ key +'<div class="circle" style="background-color: '+ dictionary[key] +'"></div></div>')
+        $('#legend').append('<br>')
+    });
+}
+
 $(document).ready(function () {
+    mapSetup();
+    legendSetup();
     addPreviousPositionsToMap();
     addCurrentPositionsToMap();
-    mapSetup();
     timeout();
 
     handleBikeTableClick(document)
