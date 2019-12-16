@@ -18,7 +18,6 @@ let mapSetup = function () {
 let previousMarker = [];
 let currentMarker = [];
 let higlightedrow = null;
-let currentCount = -1;
 
 let markerMap = {}
 
@@ -68,7 +67,7 @@ let addMarker = function (data, current, color) {
         let pMarker = L.circle([lat, long], 5, {
             color: color,
             fillColor: color,
-            fillOpacity: 0.1,
+            fillOpacity: 0.3,
             weight: 0
         }).addTo(map).bindPopup("Air Quality: " + data["airQuality"] + "<br>" +
             "PM 10: " + Number(data["pm10"]) + "<br>" +
@@ -185,25 +184,58 @@ let addPreviousPositionsToMap = function () {
             if (data[i]['bikeId'] in dataMap) {
                 for (var i = 0; i < data.length; i++) {
                     let color = 'red';
-                    if (currentSensor === "pm25" || currentSensor === "pm10") {
+                    if (currentSensor === "pm10") {
                         switch (true) {
-                            case (data[i][currentSensor] <= 12):
+                            case (data[i][currentSensor] <= 50):
                                 color = 'green';
                                 break;
-                            case (data[i][currentSensor] <= 36):
+                            case (data[i][currentSensor] <= 100):
+                                color = '#66ff33';
+                                break;
+                            case (data[i][currentSensor] <= 250):
                                 color = 'yellow';
                                 break;
-                            case (data[i][currentSensor] <= 56):
+                            case (data[i][currentSensor] <= 350):
                                 color = 'orange';
                                 break;
-                            case (data[i][currentSensor] <= 151):
+                            case (data[i][currentSensor] <= 430):
                                 color = 'red';
                                 break;
-                            case (data[i][currentSensor] <= 251):
-                                color = 'purple';
-                                break;
-                            case (data[i][currentSensor] > 251):
+                            case (data[i][currentSensor] > 430):
                                 color = 'bordeaux';
+                                break;
+                        }
+                    } else if (currentSensor === "pm25") {
+                        switch (true) {
+                            case (data[i][currentSensor] <= 30):
+                                color = 'green';
+                                break;
+                            case (data[i][currentSensor] <= 60):
+                                color = '#66ff33';
+                                break;
+                            case (data[i][currentSensor] <= 90):
+                                color = 'yellow';
+                                break;
+                            case (data[i][currentSensor] <= 120):
+                                color = 'orange';
+                                break;
+                            case (data[i][currentSensor] <= 250):
+                                color = 'red';
+                                break;
+                            case (data[i][currentSensor] > 250):
+                                color = 'bordeaux';
+                                break;
+                        }
+                    } else {
+                        switch (true) {
+                            case (data[i][currentSensor] <= 150):
+                                color = 'green';
+                                break;
+                            case (data[i][currentSensor] <= 300):
+                                color = '#ff9933';
+                                break;
+                            case (data[i][currentSensor] > 300):
+                                color = 'red';
                                 break;
                         }
                     }
@@ -231,21 +263,25 @@ let handleBikeTableClick = function (document) {
 
 let mapLegend = {
     'pm25': {
-        'good': 'green',
-        'moderate': 'yellow',
-        'unhealthy for sensitive groups': 'orange',
-        'unhealthy': 'red',
-        'very unhealthy': 'purple'
+        'Good': 'green',
+        'Satisfactory': '#66ff33',
+        'Moderately polluted': 'yellow',
+        'Poor': 'orange',
+        'Very poor': 'red',
+        'Severe': 'maroon'
     },
     'pm10': {
-        'good': 'green',
-        'moderate': 'yellow',
-        'unhealthy for sensitive groups': 'orange',
-        'unhealthy': 'red',
-        'very unhealthy': 'purple'
+        'Good': 'green',
+        'Satisfactory': '#66ff33',
+        'Moderately polluted': 'yellow',
+        'Poor': 'orange',
+        'Very poor': 'red',
+        'Severe': 'maroon'
     },
     'airQuality': {
-        'good' : 'green'
+        'Good' : 'green',
+        'Moderate' : '#ff9933',
+        'Poor' : 'red'
     }
 };
 
