@@ -108,7 +108,7 @@ let updateAverage = function () {
     let totalPM10 = 0;
     let totalPM25 = 0;
     for (let key in dataMap) {
-        totalAirQuality += dataMap[key]['airQuality'];
+        totalAirQuality += Number(dataMap[key]['airQuality']);
         totalPM10 += Number(dataMap[key]['pm10']);
         totalPM25 += Number(dataMap[key]['pm25']);
     }
