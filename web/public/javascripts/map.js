@@ -157,8 +157,6 @@ let updateMap = function (data, i) {
 
 let addCurrentPositionsToMap = function () {
     fetchCurrentPositions(function (data) {
-        // currentMarker.forEach(marker => map.removeLayer(marker));
-
         for (var i = 0; i < data.length; i++) {
             if (data[i]['bikeId'] in dataMap) {
                 let latestTimeStamp = dataMap[data[i]['bikeId']]['timestamp'];
@@ -181,31 +179,33 @@ let addCurrentPositionsToMap = function () {
 let addPreviousPositionsToMap = function () {
     fetchPreviousPositions(function (data) {
         previousMarker.forEach(marker => map.removeLayer(marker));
-        previousCount = data.length;
+        let currentSensor = $("#sensor").val();
 
         for (var i = 0; i < data.length; i++) {
             if (data[i]['bikeId'] in dataMap) {
                 for (var i = 0; i < data.length; i++) {
                     let color = 'red';
-                    switch (true) {
-                        case (data[i]['pm25'] <= 12):
-                            color = 'green';
-                            break;
-                        case (data[i]['pm25'] <= 36):
-                            color = 'yellow';
-                            break;
-                        case (data[i]['pm25'] <= 56):
-                            color = 'orange';
-                            break;
-                        case (data[i]['pm25'] <= 151):
-                            color = 'red';
-                            break;
-                        case (data[i]['pm25'] <= 251):
-                            color = 'purple';
-                            break;
-                        case (data[i]['pm25'] > 251):
-                            color = 'bordeaux';
-                            break;
+                    if (currentSensor === "pm25" || currentSensor === "pm10") {
+                        switch (true) {
+                            case (data[i][currentSensor] <= 12):
+                                color = 'green';
+                                break;
+                            case (data[i][currentSensor] <= 36):
+                                color = 'yellow';
+                                break;
+                            case (data[i][currentSensor] <= 56):
+                                color = 'orange';
+                                break;
+                            case (data[i][currentSensor] <= 151):
+                                color = 'red';
+                                break;
+                            case (data[i][currentSensor] <= 251):
+                                color = 'purple';
+                                break;
+                            case (data[i][currentSensor] > 251):
+                                color = 'bordeaux';
+                                break;
+                        }
                     }
                     addMarker(data[i], false, color)
                 }
@@ -243,16 +243,26 @@ let mapLegend = {
         'unhealthy for sensitive groups': 'orange',
         'unhealthy': 'red',
         'very unhealthy': 'purple'
+    },
+    'airQuality': {
+        'good' : 'green'
     }
-}
+};
 
 let legendSetup = function () {
-    dictionary = mapLegend['pm25'];
+    let currentSensor = $("#sensor").val();
+    dictionary = mapLegend[currentSensor];
     Object.keys(dictionary).forEach(function(key) {
-        $('#legend').append('<div style="display: -webkit-inline-box;"> '+ key +'<div class="circle" style="background-color: '+ dictionary[key] +'"></div></div>')
-        $('#legend').append('<br>')
+        $('#legend').append('<div style="display: inline-flex; margin-right: 30px;"><div class="circle" style="background-color: '+ dictionary[key] +'"/><div style="display: -webkit-inline-box;"> '+ key +'</div></div>')
     });
-}
+};
+
+$("#sensor").on("change", function () {
+    $('#legend').empty();
+    legendSetup();
+    addCurrentPositionsToMap();
+    addPreviousPositionsToMap();
+});
 
 $(document).ready(function () {
     mapSetup();

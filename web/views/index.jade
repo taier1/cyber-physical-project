@@ -8,8 +8,6 @@ block content
                 .col-12
                   .mapbox
                       #map.dvContainer(style='min-width:100%;height: 600px;')
-                .col-12
-                  .right#legend
 
             .col-3(style="height: 600px;")
                 table.table.bg-light
@@ -26,6 +24,9 @@ block content
                             th 0.0
                             th 0.0
                             th 0.0
+        .row(style="text-align: center;")
+          .col-12
+            #legend(style="display: inline-flex; margin-top: 30px;")
 
 
     script(src='javascripts/map.js')

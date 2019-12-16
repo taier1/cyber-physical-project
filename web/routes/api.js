@@ -38,7 +38,7 @@ router.get('/getCurrentPositions', function (req,res,next) {
         dbo.collection(collectionName).find({"bikeId" : bikeId}).sort({createdAt:-1}).limit(1).toArray(function (err, result) {
           results.push(result[0]);
           if(results.length === bikeIds.length){
-            res.json(results)
+            res.json(results);
             db.close()
           }
         });
@@ -53,22 +53,10 @@ router.get('/getPreviousPositions', function (req,res,next) {
     var dbo = db.db(dbName);
     dbo.collection(collectionName).find().sort({createdAt:-1}).toArray(function (err, result) {
       let cleanResult = result.slice(1);
-      res.json(cleanResult)
+      res.json(cleanResult);
       db.close()
     });
   });
 });
-
-// router.get('/getPreviousPositions', function (req,res,next) {
-//   MongoClient.connect(url, options, function (err, db) {
-//     if (err) throw err;
-//     var dbo = db.db(dbName);
-//     dbo.collection(collectionName).find().sort({createdAt:-1}).toArray(function (err, result) {
-//       let cleanResult = result.slice(1);
-//       res.json(cleanResult)
-//       db.close()
-//     });
-//   });
-// });
 
 module.exports = router;
